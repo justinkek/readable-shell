@@ -1,0 +1,16 @@
+{
+	"name": "readable-shell",
+	"version": "0.1.0",
+	"description": "Refuses shortened variable names and short-form options in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
+	"license": "MIT",
+	"pi": {
+		"extensions": [
+			"./distributions/pi/src/index.ts"
+		]
+	},
+	"author": {
+		"name": "Justin Kek",
+		"email": "justinkekjq@gmail.com"
+	},
+	"displayName": "readable-shell"
+}

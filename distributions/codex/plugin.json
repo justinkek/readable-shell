@@ -1,0 +1,83 @@
+{
+	"name": "readable-shell",
+	"version": "0.1.0",
+	"description": "Refuses shortened variable names and short-form options in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
+	"displayName": "readable-shell",
+	"license": "MIT",
+	"repository": "justinkek/readable-shell",
+	"ai-plugin-sdk": {
+		"version": "0.6.3"
+	},
+	"author": {
+		"name": "Justin Kek",
+		"email": "justinkekjq@gmail.com"
+	},
+	"ships": [
+		"rules"
+	],
+	"hooks": {
+		"SessionStart": [
+			"load-rules.sh"
+		],
+		"PreToolUse": [
+			"guard-shell-readability.sh"
+		]
+	},
+	"settings": {
+		"RULES": {
+			"kind": "choice",
+			"values": [
+				"both",
+				"names",
+				"options"
+			],
+			"default": "both",
+			"says": "which rules hold: `names` for whole-word variable names alone, `options` for long-form options alone"
+		},
+		"SCOPE": {
+			"kind": "choice",
+			"values": [
+				"both",
+				"files",
+				"commands"
+			],
+			"default": "both",
+			"says": "what the rules are held against: `files` for shell written into a file, `commands` for the commands an agent runs. Say that the commands are the same in every project, and the files are the project's own"
+		},
+		"SHELLS": {
+			"kind": "text",
+			"default": "detect",
+			"says": "which shells' files are held to the rules and have their rules printed, space separated. `detect` takes whichever the project holds. The shells known are `bourne`: sh, bash, zsh, ksh, dash, ash and mksh"
+		},
+		"ABBREVIATIONS": {
+			"kind": "text",
+			"default": "acc arg attr cfg cmd ctx curr desc dir dst enc fp idx len msg num opt pos prev req res src str tmp val var",
+			"says": "the shortened variable names refused, space separated. Setting it replaces the whole list"
+		},
+		"ABBREVIATIONS_ADDED": {
+			"kind": "text",
+			"unset": "unset, nothing added",
+			"says": "shortened names refused on top of the list, such as `btn err resp`"
+		},
+		"ABBREVIATIONS_ALLOWED": {
+			"kind": "text",
+			"unset": "unset, nothing allowed",
+			"says": "names taken off the list, such as `ctx` for a Go project or `req res` for an Express one"
+		},
+		"COMMANDS": {
+			"kind": "text",
+			"default": "aws brew curl docker gcloud gh git grep jq kubectl mise node npm npx pip3 python3 rsync sort ssh tar wget",
+			"says": "the commands whose short options are refused, space separated. Setting it replaces the whole list. Say that a command is listed only where every option in use has a long form"
+		},
+		"COMMANDS_ADDED": {
+			"kind": "text",
+			"unset": "unset, nothing added",
+			"says": "commands held to long options on top of the list, such as `terraform duckdb`"
+		},
+		"SHORT_OPTIONS_ALLOWED": {
+			"kind": "text",
+			"default": "git:-C tar:-C",
+			"says": "short options that have no long form, each as `command:option`, space separated. Setting it replaces the whole list"
+		}
+	}
+}
