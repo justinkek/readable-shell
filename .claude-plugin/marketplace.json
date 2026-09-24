@@ -1,0 +1,15 @@
+{
+	"name": "readable-shell",
+	"description": "Refuses shortened variable names and short-form options in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
+	"owner": {
+		"name": "Justin Kek",
+		"email": "justinkekjq@gmail.com"
+	},
+	"plugins": [
+		{
+			"name": "readable-shell",
+			"source": "./distributions/claude",
+			"description": "Refuses shortened variable names and short-form options in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both."
+		}
+	]
+}

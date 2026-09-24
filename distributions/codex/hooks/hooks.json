@@ -1,0 +1,46 @@
+{
+	"hooks": {
+		"SessionStart": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"${PLUGIN_ROOT}/hooks/load-rules.sh\""
+					},
+					{
+						"type": "command",
+						"command": "bash \"${PLUGIN_ROOT}/hooks/mark-session-started.sh\""
+					}
+				]
+			}
+		],
+		"PreToolUse": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"${PLUGIN_ROOT}/hooks/guard-shell-readability.sh\""
+					}
+				]
+			}
+		],
+		"UserPromptSubmit": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"${PLUGIN_ROOT}/hooks/note-a-new-version.sh\""
+					},
+					{
+						"type": "command",
+						"command": "bash \"${PLUGIN_ROOT}/hooks/print-session-start-if-missed.sh\""
+					},
+					{
+						"type": "command",
+						"command": "bash \"${PLUGIN_ROOT}/hooks/replay-notes.sh\""
+					}
+				]
+			}
+		]
+	}
+}
