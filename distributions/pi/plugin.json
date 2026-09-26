@@ -1,12 +1,12 @@
 {
 	"name": "readable-shell",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Refuses shortened variable names and short-form options in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
 	"displayName": "readable-shell",
 	"license": "MIT",
 	"repository": "justinkek/readable-shell",
 	"ai-plugin-sdk": {
-		"version": "0.6.3"
+		"version": "0.6.9"
 	},
 	"author": {
 		"name": "Justin Kek",
@@ -16,11 +16,19 @@
 		"rules"
 	],
 	"hooks": {
-		"SessionStart": [
+		"session_start": [
 			"load-rules.sh"
 		],
-		"PreToolUse": [
-			"guard-shell-readability.sh"
+		"before_tool": [
+			{
+				"script": "guard-shell-readability.sh",
+				"on": [
+					"bash",
+					"write",
+					"edit",
+					"multi_edit"
+				]
+			}
 		]
 	},
 	"settings": {

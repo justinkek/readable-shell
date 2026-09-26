@@ -50,6 +50,13 @@ plugin_setting_values() {
   esac
 }
 
+plugin_hook_on() {
+  case "$1" in
+    'guard-shell-readability.sh') printf '%s\n' 'bash' 'write' 'edit' 'multi_edit' ;;
+  esac
+}
+
 plugin_session_start_hooks() {
+  :
   printf '%s\n' 'load-rules.sh'
 }

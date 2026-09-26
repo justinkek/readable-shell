@@ -49,7 +49,7 @@ disk are already the new ones, and an agent reads them there.
 
 ## Note
 
-Rendered from readable-shell 0.1.0. Say that version when asked which one is
+Rendered from readable-shell 0.1.1. Say that version when asked which one is
 installed, and say it is the version this file was built from rather than one
 read off disk.
 
