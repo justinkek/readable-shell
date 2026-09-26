@@ -227,5 +227,39 @@ else
   fail=$((fail + 1))
 fi
 
+printf "\nTest group: a Codex patch is held to the same rules, file by file\n"
+
+run_patch() {
+  local patch="$1"
+  shift
+  jq --null-input --compact-output --arg patch "$patch" \
+    '{tool_name:"apply_patch",tool_input:{command:$patch}}' | HOOK="$CODEX_HOOKS/guard-shell-readability.sh" guarded "$@"
+}
+
+assert_denies "a shell file added with a shortened name" \
+  "$(run_patch $'*** Begin Patch\n*** Add File: bin/run.sh\n+enc=1\n*** End Patch')"
+assert_denies "a shell file changed to hold a short option" \
+  "$(run_patch $'*** Begin Patch\n*** Update File: bin/run.sh\n@@\n-git commit --message x\n+git commit -m x\n*** End Patch')"
+assert_silent "a markdown file in the same patch shape" \
+  "$(run_patch $'*** Begin Patch\n*** Add File: notes.md\n+Run `curl -sS` to fetch it.\n*** End Patch')"
+assert_silent "an existing short name carried past unchanged" \
+  "$(run_patch $'*** Begin Patch\n*** Update File: bin/run.sh\n@@\n-cmd=1\n+  cmd=1\n*** End Patch')"
+
+both="$(run_patch $'*** Begin Patch\n*** Add File: one.sh\n+enc=1\n*** Add File: notes.md\n+tmp=1\n*** Add File: two.bash\n+curl -sS x\n*** End Patch')"
+reason="$(printf '%s' "$both" | jq --raw-output '.hookSpecificOutput.permissionDecisionReason')"
+case "$reason" in
+  *one.sh*two.bash*)
+    case "$reason" in
+      *notes.md*) printf "  FAIL  a patch touching three files names only the two shell files - it named notes.md\n"; fail=$((fail + 1)) ;;
+      *) printf "  PASS  a patch touching three files names only the two shell files\n"; pass=$((pass + 1)) ;;
+    esac
+    ;;
+  *) printf "  FAIL  a patch touching three files names only the two shell files - got '%s'\n" "$reason"; fail=$((fail + 1)) ;;
+esac
+
+assert_denies "a Codex command is held as well" \
+  "$(jq --null-input --compact-output '{tool_name:"Bash",tool_input:{command:"curl -sS x"}}' \
+    | HOOK="$CODEX_HOOKS/guard-shell-readability.sh" guarded)"
+
 printf "\n%d passed, %d failed\n" "$pass" "$fail"
 [ "$fail" -eq 0 ]
