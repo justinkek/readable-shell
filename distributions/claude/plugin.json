@@ -1,6 +1,6 @@
 {
 	"name": "readable-shell",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"description": "Refuses shortened variable names and short-form options in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
 	"displayName": "readable-shell",
 	"license": "MIT",
