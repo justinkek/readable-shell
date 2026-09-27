@@ -65,11 +65,16 @@ is held.
 
 CI runs both.
 
-## Every merge is a release
+## When to raise the version
 
-An install names no ref, so what main points at is what a person gets. Every
-merge raises the version in `plugin.json` and `package.json`, which a test holds
-together, and CI fails a pull request whose version matches its base.
+An install names no ref, so what main points at is what a person gets. A merge
+that changes what an install receives - `distributions/`, the marketplace
+manifests, `plugin.json` or `package.json` - raises the version in
+`plugin.json` and `package.json`. A merge that touches only the README, the
+tests or CI raises nothing. CI runs the SDK's `version-changed` on every pull
+request to hold this:
+
+    ../ai-plugin-sdk/version-changed "$PWD" origin/main
 
 ## Where a change belongs
 
