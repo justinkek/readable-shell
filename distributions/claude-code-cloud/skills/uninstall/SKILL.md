@@ -26,7 +26,7 @@ The container is rebuilt without it, and nothing of the old one is left.
 
 ## Note
 
-Rendered from readable-shell 0.1.1. Say that version when asked which one is
+Rendered from readable-shell 0.1.2. Say that version when asked which one is
 installed, and say it is the version this file was built from rather than one
 read off disk.
 
