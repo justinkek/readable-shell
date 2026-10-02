@@ -6,6 +6,9 @@
 	"pi": {
 		"extensions": [
 			"./distributions/pi/src/index.ts"
+		],
+		"skills": [
+			"./distributions/pi/skills"
 		]
 	},
 	"author": {
