@@ -14,7 +14,7 @@ plugin_setting_default() {
     UPDATE_CHECK_DAYS) printf '%s' '1' ;;
     VERSION_SOURCE) printf '%s' 'https://raw.githubusercontent.com/justinkek/readable-shell/main/package.json' ;;
     RULES) printf '%s' 'both' ;;
-    SCOPE) printf '%s' 'both' ;;
+    SCOPE) printf '%s' 'files' ;;
     SHELLS) printf '%s' 'detect' ;;
     ABBREVIATIONS) printf '%s' 'acc arg attr cfg cmd ctx curr desc dir dst enc fp idx len msg num opt pos prev req res src str tmp val var' ;;
     ABBREVIATIONS_ADDED) printf '%s' '' ;;

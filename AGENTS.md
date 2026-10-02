@@ -32,6 +32,8 @@ about a legitimate `-n` is one people turn off. Precision over recall.
 | a write or an edit to a shell file, whichever tool made it | the project's own code, which varies per project | `SCOPE=files` |
 | `Bash` tool calls | how an agent behaves, the same in every project | `SCOPE=commands` |
 
+`SCOPE` defaults to `files`. A committed file is read for years; a command an agent runs is read once, if at all, and refusing it costs retries and, where a platform lacks a long form, a command that fails.
+
 The guard reads the tool call through the SDK's `tool_entries`, and `plugin.json` asks for the `bash`, `write`, `edit` and `multi_edit` kinds, so it names no client's tools: a Claude `Edit` and a Codex patch arrive as the same entries.
 
 A command an agent runs is Bourne shell whatever the project holds, so the

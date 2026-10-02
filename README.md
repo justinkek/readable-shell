@@ -2,9 +2,8 @@
 
 (audience: humans)
 
-Shell an agent writes should read like the rest of your code. This plugin
-refuses two things, at the moment an agent writes them into a file or runs them
-as a command:
+Shell an agent commits should read like the rest of your code. This plugin
+refuses two things at the moment an agent writes them into a shell file:
 
 1. A shortened variable name - `encoded`, not `enc`.
 2. A short-form option on a command that has a long one - `git --message`, not
@@ -29,6 +28,10 @@ where its options have long forms, so `sed -n` and `ls -la` pass, and so does
 See [INSTALL.md](INSTALL.md), and [COMPATIBILITY.md](COMPATIBILITY.md) for what
 runs on each client.
 
+The commands an agent runs are left alone by default: a command is read once,
+if at all, and a rule that refuses it costs retries. Set `SCOPE` to `both` to
+hold them to the rules too.
+
 ## Settings
 
 Every setting can be set for yourself in `~/.readable-shell/settings`, or for
@@ -45,7 +48,7 @@ READABLE_SHELL_COMMANDS_ADDED = terraform
 | Setting | Default | What it does |
 | --- | --- | --- |
 | `READABLE_SHELL_RULES` | `both` | `names` or `options` to hold one rule alone |
-| `READABLE_SHELL_SCOPE` | `both` | `files` for shell written into files, `commands` for commands an agent runs |
+| `READABLE_SHELL_SCOPE` | `files` | `files` for shell written into files, `commands` for commands an agent runs, `both` for the two |
 | `READABLE_SHELL_SHELLS` | `detect` | which shells' files are held and have their rules printed; `detect` takes what the project holds |
 | `READABLE_SHELL_ABBREVIATIONS` | 26 words | the shortened names refused; setting it replaces the list |
 | `READABLE_SHELL_ABBREVIATIONS_ADDED` | unset | names refused on top of the list |

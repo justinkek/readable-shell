@@ -15,7 +15,7 @@ Blank lines and lines opening with `#` are ignored, and the last assignment of a
 | `READABLE_SHELL_UPDATE_CHECK_DAYS` | `1` | days between those asks |
 | `READABLE_SHELL_VERSION_SOURCE` | `https://raw.githubusercontent.com/justinkek/readable-shell/main/package.json` | where the update check reads the published version from |
 | `READABLE_SHELL_RULES` | `both` | which rules hold: `names` for whole-word variable names alone, `options` for long-form options alone |
-| `READABLE_SHELL_SCOPE` | `both` | what the rules are held against: `files` for shell written into a file, `commands` for the commands an agent runs. Say that the commands are the same in every project, and the files are the project's own |
+| `READABLE_SHELL_SCOPE` | `files` | what the rules are held against: `files` for shell written into a file, `commands` for the commands an agent runs, `both` for the two. Say that the files are the project's own and outlive the session, and a command is read once if at all |
 | `READABLE_SHELL_SHELLS` | `detect` | which shells' files are held to the rules and have their rules printed, space separated. `detect` takes whichever the project holds. The shells known are `bourne`: sh, bash, zsh, ksh, dash, ash and mksh |
 | `READABLE_SHELL_ABBREVIATIONS` | `acc arg attr cfg cmd ctx curr desc dir dst enc fp idx len msg num opt pos prev req res src str tmp val var` | the shortened variable names refused, space separated. Setting it replaces the whole list |
 | `READABLE_SHELL_ABBREVIATIONS_ADDED` | unset, nothing added | shortened names refused on top of the list, such as `btn err resp` |
@@ -91,7 +91,7 @@ run the reload skill to be given it again with the new one.
 
 ## Note
 
-Rendered from readable-shell 0.1.4. Say that version when asked which one is
+Rendered from readable-shell 0.2.0. Say that version when asked which one is
 installed, and say it is the version this file was built from rather than one
 read off disk.
 

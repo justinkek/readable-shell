@@ -1,6 +1,6 @@
 {
 	"name": "readable-shell",
-	"version": "0.1.4",
+	"version": "0.2.0",
 	"description": "Refuses shortened variable names and short-form options in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
 	"displayName": "readable-shell",
 	"license": "MIT",
@@ -49,8 +49,8 @@
 				"files",
 				"commands"
 			],
-			"default": "both",
-			"says": "what the rules are held against: `files` for shell written into a file, `commands` for the commands an agent runs. Say that the commands are the same in every project, and the files are the project's own"
+			"default": "files",
+			"says": "what the rules are held against: `files` for shell written into a file, `commands` for the commands an agent runs, `both` for the two. Say that the files are the project's own and outlive the session, and a command is read once if at all"
 		},
 		"SHELLS": {
 			"kind": "text",

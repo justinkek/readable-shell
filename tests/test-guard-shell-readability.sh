@@ -15,7 +15,16 @@ mkdir -p "$PERSON" "$PROJECT"
 pass=0
 fail=0
 
+# Most groups hold both files and commands to the rules, so each says what it
+# checks; the default, files alone, has a group of its own at the end.
 guarded() {
+  (
+    for key in $(env | sed -n 's/^\(READABLE_SHELL_[A-Z_]*\)=.*/\1/p'); do unset "$key"; done
+    cd "$PROJECT" && env HOME="$PERSON" READABLE_SHELL_SCOPE=both "$@" bash "$HOOK" 2>/dev/null
+  )
+}
+
+guarded_by_default() {
   (
     for key in $(env | sed -n 's/^\(READABLE_SHELL_[A-Z_]*\)=.*/\1/p'); do unset "$key"; done
     cd "$PROJECT" && env HOME="$PERSON" "$@" bash "$HOOK" 2>/dev/null
@@ -260,6 +269,15 @@ esac
 assert_denies "a Codex command is held as well" \
   "$(jq --null-input --compact-output '{tool_name:"Bash",tool_input:{command:"curl -sS x"}}' \
     | HOOK="$CODEX_HOOKS/guard-shell-readability.sh" guarded)"
+
+printf "\nTest group: by default an agent's commands are left alone, and files are held\n"
+
+assert_silent "a short option in a command" \
+  "$(jq --null-input --compact-output '{tool_name:"Bash",tool_input:{command:"git commit -m x"}}' | guarded_by_default)"
+assert_silent "a shortened name in a command" \
+  "$(jq --null-input --compact-output '{tool_name:"Bash",tool_input:{command:"enc=1"}}' | guarded_by_default)"
+assert_denies "a shortened name written into a shell file" \
+  "$(jq --null-input --compact-output '{tool_name:"Write",tool_input:{file_path:"/tmp/probe.sh",content:"enc=1"}}' | guarded_by_default)"
 
 printf "\n%d passed, %d failed\n" "$pass" "$fail"
 [ "$fail" -eq 0 ]
