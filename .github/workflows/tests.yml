@@ -29,8 +29,10 @@ jobs:
       - name: The SDK's tests, against this plugin
         run: ../ai-plugin-sdk/tests/run-tests "$PWD"
 
-      - name: The version moved
+      # The SDK decides whether this change reaches an install, and so whether
+      # it needs a new version.
+      - name: The version moved, where an install receives the change
         if: github.event_name == 'pull_request'
         run: |
           git fetch --depth=1 origin "$GITHUB_BASE_REF"
-          tests/version-changed "origin/$GITHUB_BASE_REF"
+          ../ai-plugin-sdk/version-changed "$PWD" "origin/$GITHUB_BASE_REF"
