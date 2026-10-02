@@ -91,7 +91,7 @@ run the reload skill to be given it again with the new one.
 
 ## Note
 
-Rendered from readable-shell 0.2.0. Say that version when asked which one is
+Rendered from readable-shell 0.3.0. Say that version when asked which one is
 installed, and say it is the version this file was built from rather than one
 read off disk.
 

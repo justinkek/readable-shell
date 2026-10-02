@@ -32,6 +32,14 @@ The commands an agent runs are left alone by default: a command is read once,
 if at all, and a rule that refuses it costs retries. Set `SCOPE` to `both` to
 hold them to the rules too.
 
+Three more rules say how a shell file is laid out, and are printed for a
+project that holds shell files. Nothing refuses a breach of them yet:
+
+- a pipeline of more than three stages, or logic used twice, goes in a named
+  function
+- a number or path that carries meaning gets a name
+- a script or function exits early rather than nesting its work in an `if`
+
 ## Settings
 
 Every setting can be set for yourself in `~/.readable-shell/settings`, or for

@@ -25,6 +25,10 @@ and nothing it refuses is a bug.
 Both lists are hand-kept rather than general, on purpose: a guard that argues
 about a legitimate `-n` is one people turn off. Precision over recall.
 
+## Layout rules
+
+`rules/files-functions.md`, `rules/files-constants.md` and `rules/files-early-exits.md` say how a shell file is laid out: named functions, named constants and early exits. They are printed for a project whose shell files are held, and never for commands alone, which have no layout. Nothing refuses a breach of them yet.
+
 ## Two paths, kept apart
 
 | Path | What it is about | Setting |

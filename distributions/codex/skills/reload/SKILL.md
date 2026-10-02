@@ -5,7 +5,7 @@ description: Print what readable-shell puts into a session at its start, when no
 
 # Reloading readable-shell
 
-Rendered from readable-shell 0.2.0. Say that version when asked which one
+Rendered from readable-shell 0.3.0. Say that version when asked which one
 is installed, and say it is the version this file was built from rather than one
 read off disk.
 
@@ -29,6 +29,18 @@ Write every command option in its long form - `git --message` not `git -m`, `jq 
 ## Whole-word variable names
 
 Name every shell variable with the whole word - `encoded` not `enc`, `command` not `cmd`, whether it is assigned bare, with `local`, with `export` or with `declare`. It applies to shell written into a file; a one-off command is not held to it. A hook refuses an assignment whose name is a shortening it knows, counting only what is newly added. It has no escape hatch: rename the variable and retry.
+
+## Named functions
+
+In a shell file, give a pipeline of more than three stages, or logic used more than once, a function named for what it returns, and call the function. `published_items "$file"` reads at a glance; the five-stage chain behind it does not.
+
+## Named constants
+
+In a shell file, give a number or a path that carries meaning a name saying what it is, and use the name: `days_logs_are_kept=14`, then `-mtime +"$days_logs_are_kept"`. A number with no meaning of its own, such as the `1` in `head --lines=1`, stays as it is.
+
+## Early exits
+
+In a shell file, end a script or a function as soon as a condition rules out the rest - `[ -f "$config" ] || exit 0` - rather than nesting the rest inside an `if`. The main work then sits at the left margin, after every check that guards it.
 
 ## Note
 
