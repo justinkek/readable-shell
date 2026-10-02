@@ -5,7 +5,7 @@ description: Print what readable-shell puts into a session at its start, when no
 
 # Reloading readable-shell
 
-Rendered from readable-shell 0.1.3. Say that version when asked which one
+Rendered from readable-shell 0.1.4. Say that version when asked which one
 is installed, and say it is the version this file was built from rather than one
 read off disk.
 
