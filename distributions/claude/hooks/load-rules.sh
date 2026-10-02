@@ -70,6 +70,17 @@ printed() {
       first=""
     done
   fi
+  # How a shell file is laid out is about files alone: a one-off command has no
+  # functions or constants to name.
+  if [ -n "$files_shells" ]; then
+    for layout in functions constants early-exits; do
+      layout="$rules/files-$layout.md"
+      [ -f "$layout" ] || continue
+      [ -n "$first" ] || printf '\n'
+      cat "$layout"
+      first=""
+    done
+  fi
 }
 
 if [ -n "$event" ]; then

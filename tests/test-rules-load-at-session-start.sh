@@ -114,6 +114,17 @@ assert "the loader does not print AGENTS.md" "$?" "a session is paying for it"
 grep --quiet --fixed-strings 'rules/' "$REPOSITORY/AGENTS.md"
 assert "and AGENTS.md says where the printed rules live" "$?" "it does not"
 
+printf "\nTest group: how a shell file is laid out reaches a project that holds shell files\n"
+
+for heading in "## Named functions" "## Named constants" "## Early exits"; do
+  holds "$(given_in "$with_shell")" "$heading"
+  assert "$heading is printed for a project with shell files" "$?" "it is not"
+
+  holds "$(given_in "$with_shell" READABLE_SHELL_SCOPE=commands)" "$heading"
+  [ "$?" = "1" ]
+  assert "and not when only commands are held, which have no layout" "$?" "it was printed"
+done
+
 printf "\nTest group: by default the rules are about files alone\n"
 
 by_default() {
