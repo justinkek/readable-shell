@@ -32,7 +32,7 @@ given_in() {
     for key in $(env | sed -n 's/^\(READABLE_SHELL_[A-Z_]*\)=.*/\1/p'); do unset "$key"; done
     jq --null-input --compact-output --arg cwd "$project" \
       '{hook_event_name:"SessionStart",session_id:"test-load",cwd:$cwd}' \
-      | env HOME="$PERSON" READABLE_SHELL_PLAIN=1 "$@" bash "$LOADER" 2>/dev/null
+      | env HOME="$PERSON" READABLE_SHELL_PLAIN=1 READABLE_SHELL_SCOPE=both "$@" bash "$LOADER" 2>/dev/null
   )
 }
 
@@ -102,7 +102,7 @@ assert "a shell named outright is printed whether or not the project holds it" "
 
 printf "\nTest group: a session with no project named is given every rule\n"
 
-bare="$(printf '{}' | env HOME="$PERSON" READABLE_SHELL_PLAIN=1 bash "$LOADER" 2>/dev/null)"
+bare="$(printf '{}' | env HOME="$PERSON" READABLE_SHELL_PLAIN=1 READABLE_SHELL_SCOPE=both bash "$LOADER" 2>/dev/null)"
 holds "$bare" "to shell written into a file and to a one-off command alike"
 assert "a hand run prints the rules for every known shell" "$?" "it printed '$bare'"
 
@@ -113,6 +113,22 @@ holds "$printed" "Working in this repository"
 assert "the loader does not print AGENTS.md" "$?" "a session is paying for it"
 grep --quiet --fixed-strings 'rules/' "$REPOSITORY/AGENTS.md"
 assert "and AGENTS.md says where the printed rules live" "$?" "it does not"
+
+printf "\nTest group: by default the rules are about files alone\n"
+
+by_default() {
+  (
+    for key in $(env | sed -n 's/^\(READABLE_SHELL_[A-Z_]*\)=.*/\1/p'); do unset "$key"; done
+    jq --null-input --compact-output --arg cwd "$1" '{hook_event_name:"SessionStart",cwd:$cwd}' \
+      | env HOME="$PERSON" READABLE_SHELL_PLAIN=1 bash "$LOADER" 2>/dev/null
+  )
+}
+
+holds "$(by_default "$with_shell")" "a one-off command is not held to it"
+assert "a project with shell is told the rules cover its files and not its commands" "$?" "they say otherwise"
+
+[ -z "$(by_default "$without_shell")" ]
+assert "a project with no shell is told nothing" "$?" "it pays for rules nothing enforces"
 
 printf "\n%d passed, %d failed\n" "$pass" "$fail"
 [ "$fail" -eq 0 ]

@@ -29,7 +29,7 @@ That takes the settings and the state with it, so nothing is left.
 
 ## Note
 
-Rendered from readable-shell 0.1.4. Say that version when asked which one is
+Rendered from readable-shell 0.2.0. Say that version when asked which one is
 installed, and say it is the version this file was built from rather than one
 read off disk.
 

@@ -5,7 +5,7 @@ description: Print what readable-shell puts into a session at its start, when no
 
 # Reloading readable-shell
 
-Rendered from readable-shell 0.1.4. Say that version when asked which one
+Rendered from readable-shell 0.2.0. Say that version when asked which one
 is installed, and say it is the version this file was built from rather than one
 read off disk.
 
@@ -24,11 +24,11 @@ anything readable-shell printed earlier in this session.
 
 ## Long-form options
 
-Write every command option in its long form - `git --message` not `git -m`, `jq --raw-output` not `jq -r`. It applies to shell written into a file and to a one-off command alike. Where a tool offers no long form for an option, the short one stands: much of the base Unix toolset has none, and a shell test like `[ -n "$value" ]` never had one. A hook refuses a short option on the commands it knows to have long ones, counting only what is newly added. It has no escape hatch: where an option genuinely has no long form on this platform, say which and leave the exception for the user to add.
+Write every command option in its long form - `git --message` not `git -m`, `jq --raw-output` not `jq -r`. It applies to shell written into a file; a one-off command is not held to it. Where a tool offers no long form for an option, the short one stands: much of the base Unix toolset has none, and a shell test like `[ -n "$value" ]` never had one. A hook refuses a short option on the commands it knows to have long ones, counting only what is newly added. It has no escape hatch: where an option genuinely has no long form on this platform, say which and leave the exception for the user to add.
 
 ## Whole-word variable names
 
-Name every shell variable with the whole word - `encoded` not `enc`, `command` not `cmd`, whether it is assigned bare, with `local`, with `export` or with `declare`. It applies to shell written into a file and to a one-off command alike. A hook refuses an assignment whose name is a shortening it knows, counting only what is newly added. It has no escape hatch: rename the variable and retry.
+Name every shell variable with the whole word - `encoded` not `enc`, `command` not `cmd`, whether it is assigned bare, with `local`, with `export` or with `declare`. It applies to shell written into a file; a one-off command is not held to it. A hook refuses an assignment whose name is a shortening it knows, counting only what is newly added. It has no escape hatch: rename the variable and retry.
 
 ## Note
 
