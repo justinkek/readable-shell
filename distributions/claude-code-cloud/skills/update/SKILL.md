@@ -42,14 +42,14 @@ update readable-shell.
 (audience: agents) Then run the session start hook again, since the copy in the
 menu is the one loaded before the update:
 
-    printf '{}' | /opt/readable-shell/distributions/claude-code-cloud/hooks/load-rules.sh
+    printf '{}' | /opt/readable-shell/distributions/claude-code-cloud/hooks/
 
 Run `/reload-skills` when you want the menu to list the new copy. The skills on
 disk are already the new ones, and an agent reads them there.
 
 ## Note
 
-Rendered from readable-shell 0.3.0. Say that version when asked which one is
+Rendered from readable-shell 0.4.0. Say that version when asked which one is
 installed, and say it is the version this file was built from rather than one
 read off disk.
 

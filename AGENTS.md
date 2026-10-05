@@ -2,13 +2,16 @@
 
 (audience: agents)
 
-The rules this plugin prints into a session are not this file. They are the
-files in `rules/`: `options.md` for long-form options, and one `names-<shell>.md`
-per shell family for whole-word variable names. `hooks/load-rules.sh` prints
-only the ones the settings and the project call for, with `{held-to}` filled in
-to say what they apply to. Run the hook to see what a session gets:
+The rules this plugin gives a session are not this file. They are the files in
+`rules/`: `options.md` for long-form options, one `names-<shell>.md` per shell
+family for whole-word variable names, and `files-*.md` for how a shell file is
+laid out. A session is given them once, in the refusal of the first shell it
+writes that the rules hold, by `rules_text` in `hooks/readable-shell-lib.sh`,
+with `{held-to}` filled in to say what they apply to. A session that never
+writes shell is never told them. To see what a session gets:
 
-    printf '{"cwd":"%s"}' "$PWD" | distributions/claude/hooks/load-rules.sh
+    printf '{"session_id":"look","tool_name":"Write","tool_input":{"file_path":"a.sh","content":"x=1"}}' \
+      | env HOME="$(mktemp -d)" bash distributions/claude/hooks/guard-shell-readability.sh
 
 This file is what a session working *on* the plugin reads.
 
@@ -27,7 +30,7 @@ about a legitimate `-n` is one people turn off. Precision over recall.
 
 ## Layout rules
 
-`rules/files-functions.md`, `rules/files-constants.md` and `rules/files-early-exits.md` say how a shell file is laid out: named functions, named constants and early exits. They are printed for a project whose shell files are held, and never for commands alone, which have no layout. Nothing refuses a breach of them yet.
+`rules/files-functions.md`, `rules/files-constants.md` and `rules/files-early-exits.md` say how a shell file is laid out: named functions, named constants and early exits. They are shown with the first shell file a session writes, and never for a command, which has no layout. Nothing refuses a breach of them yet.
 
 ## Two paths, kept apart
 
@@ -57,12 +60,8 @@ families there are, and Bourne is the only one so far.
 | file names and opening lines | nothing | one pattern each |
 | printed name rule | nothing | `rules/names-<family>.md` |
 
-Adding a family is one arm in `scan_names`, one in `shell_of_file` and
-`project_shells`, a word in `known_shells`, a rules file, and a test group.
-
-`SHELLS=detect` looks at the project's files once, at session start, to decide
-which name rules to print. The guard does not detect: a file in any known shell
-is held.
+Adding a family is one arm in `scan_names`, one in `shell_of_file`, a word in
+`known_shells`, a rules file, and a test group.
 
 ## Before you push
 
@@ -90,7 +89,7 @@ request to hold this:
 | a setting, its kind and its default | `plugin.json` |
 | how the lists, the scans and the shells are read | `hooks/readable-shell-lib.sh` |
 | what is refused, and what the refusal says | `hooks/guard-shell-readability.sh` |
-| which rules are printed | `hooks/load-rules.sh` |
+| which rules a session is shown | `rules_text` in `hooks/readable-shell-lib.sh` |
 | what an older version left behind | `hooks/migrations.sh` |
 | what works on one client | `clients/<client>/support.md` |
 | what an install copies | nothing by hand - `distributions/` is built by `./build` |

@@ -18,7 +18,7 @@ A cloud session resolves no marketplace, so the marketplace install does not wor
 2. Ask the agent to run the "Cloud Session Install Script" (see below).
 3. The hooks take effect from your next message. Session start has passed, so ask the agent to run the session start hook against this one:
 
-        printf '{}' | /opt/readable-shell/distributions/claude-code-cloud/hooks/load-rules.sh
+        printf '{}' | /opt/readable-shell/distributions/claude-code-cloud/hooks/
 
 4. The skills are on disk as soon as the script finishes, and an agent follows one by reading it at `/opt/readable-shell/distributions/claude-code-cloud/skills/<name>/SKILL.md`. Nothing waits on the menu.
 5. Run `/reload-skills` when you want them listed in the menu, as `/readable-shell-settings`, `/readable-shell-update` and the rest. Each skill carries the plugin's name, so a second plugin built the same way never overwrites it. `/reload-plugins` does not work over a remote connection, and this install method adds no plugin.
@@ -62,7 +62,7 @@ update readable-shell.
 (audience: agents) Then run the session start hook again, since the copy in the
 menu is the one loaded before the update:
 
-    printf '{}' | /opt/readable-shell/distributions/claude-code-cloud/hooks/load-rules.sh
+    printf '{}' | /opt/readable-shell/distributions/claude-code-cloud/hooks/
 
 Run `/reload-skills` when you want the menu to list the new copy. The skills on
 disk are already the new ones, and an agent reads them there.

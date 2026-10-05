@@ -6,16 +6,15 @@
 
 ### Claude Code, on your machine
 
-Every hook runs: the rules are printed when a session starts, and a command or
-an edit to a shell file that breaks them is refused before it runs. Settings are
+Every hook runs: the first shell file a session writes is refused once with the
+rules, and a write that breaks them after that is refused before it runs. Settings are
 kept in `~/.readable-shell`, or in a project's own `.readable-shell/settings`.
 
 Not yet verified on a real session.
 
 ### Claude Chat
 
-No hook runs, so nothing is refused. The rules arrive only when the reload skill
-prints them, and a session is asked to follow them rather than held to them.
+No hook runs, so nothing is refused and a session is never shown the rules.
 
 Not yet verified on a real session.
 
