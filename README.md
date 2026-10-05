@@ -32,8 +32,8 @@ The commands an agent runs are left alone by default: a command is read once,
 if at all, and a rule that refuses it costs retries. Set `SCOPE` to `both` to
 hold them to the rules too.
 
-Three more rules say how a shell file is laid out, and are printed for a
-project that holds shell files. Nothing refuses a breach of them yet:
+Three more rules say how a shell file is laid out. Nothing refuses a breach of
+them yet:
 
 - a pipeline of more than three stages, or logic used twice, goes in a named
   function
@@ -57,7 +57,7 @@ READABLE_SHELL_COMMANDS_ADDED = terraform
 | --- | --- | --- |
 | `READABLE_SHELL_RULES` | `both` | `names` or `options` to hold one rule alone |
 | `READABLE_SHELL_SCOPE` | `files` | `files` for shell written into files, `commands` for commands an agent runs, `both` for the two |
-| `READABLE_SHELL_SHELLS` | `detect` | which shells' files are held and have their rules printed; `detect` takes what the project holds |
+| `READABLE_SHELL_SHELLS` | `bourne` | which shells' files are held; `detect` holds every known shell |
 | `READABLE_SHELL_ABBREVIATIONS` | 26 words | the shortened names refused; setting it replaces the list |
 | `READABLE_SHELL_ABBREVIATIONS_ADDED` | unset | names refused on top of the list |
 | `READABLE_SHELL_ABBREVIATIONS_ALLOWED` | unset | names taken off the list |
@@ -65,8 +65,10 @@ READABLE_SHELL_COMMANDS_ADDED = terraform
 | `READABLE_SHELL_COMMANDS_ADDED` | unset | commands held on top of the list |
 | `READABLE_SHELL_SHORT_OPTIONS_ALLOWED` | `git:-C tar:-C` | short options with no long form, as `command:option` |
 
-The rules printed into a session follow the same settings, so a rule that is
-off, or a shell the project does not use, costs nothing.
+A session is told the rules once, when it first writes a shell file: that
+write is refused with the rules in the reason, and the agent redoes it. A
+session that writes no shell is told nothing, and the rules it is told follow
+the same settings.
 
 ## Shells
 

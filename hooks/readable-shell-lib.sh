@@ -31,7 +31,7 @@ scope_holds() {
   return 1
 }
 
-# The shells SHELLS names that this plugin knows, or detect.
+# The shells SHELLS names that this plugin knows, or detect for every one.
 shells_chosen() {
   local shell chosen=""
   for shell in $(setting_value SHELLS); do
@@ -75,29 +75,35 @@ shell_of_file() {
   fi
 }
 
-# The shells a project's files are written in, one to a line. Names are read
-# first, since they cost nothing; a file with no extension is opened to read
-# its first line, up to a few hundred of them.
-project_shells() {
-  local directory="$1" listed unnamed
-  if git -C "$directory" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    listed="$(git -C "$directory" ls-files --cached --others --exclude-standard 2>/dev/null)"
+# The rules for the shell named, as a session is told them the first time it
+# writes shell the rules hold. A file has a layout as well; a one-off command
+# has none, so it is told the option and name rules alone.
+rules_text() {
+  local shell="$1" for_a_file="$2" rules="$PLUGIN_ROOT/rules" held_to first=1 layout
+  if scope_holds files && scope_holds commands; then
+    held_to="It applies to shell written into a file and to a one-off command alike."
+  elif scope_holds files; then
+    held_to="It applies to shell written into a file; a one-off command is not held to it."
   else
-    listed="$(cd "$directory" 2>/dev/null && find . -maxdepth 4 -type f \
-      -not -path '*/.git/*' -not -path '*/node_modules/*' 2>/dev/null)"
+    held_to="It applies to a one-off command you run; shell written into a file is not held to it."
   fi
-  if printf '%s\n' "$listed" | grep --quiet --extended-regexp "$bourne_file_names"; then
-    printf 'bourne\n'
-    return 0
+  if rule_holds options && [ -f "$rules/options.md" ]; then
+    sed "s|{held-to}|$held_to|" "$rules/options.md"
+    first=""
   fi
-  while IFS= read -r unnamed; do
-    [ -n "$unnamed" ] && [ -f "$directory/$unnamed" ] || continue
-    if head -n 1 "$directory/$unnamed" 2>/dev/null \
-      | grep --quiet --extended-regexp "$bourne_opening_line"; then
-      printf 'bourne\n'
-      return 0
-    fi
-  done < <(printf '%s\n' "$listed" | grep --invert-match --extended-regexp '\.[A-Za-z0-9]+$' | head -n 300)
+  if rule_holds names && [ -f "$rules/names-$shell.md" ]; then
+    [ -n "$first" ] || printf '\n'
+    sed "s|{held-to}|$held_to|" "$rules/names-$shell.md"
+    first=""
+  fi
+  [ -n "$for_a_file" ] || return 0
+  for layout in functions constants early-exits; do
+    layout="$rules/files-$layout.md"
+    [ -f "$layout" ] || continue
+    [ -n "$first" ] || printf '\n'
+    cat "$layout"
+    first=""
+  done
 }
 
 # The shortened names refused, one to a line.

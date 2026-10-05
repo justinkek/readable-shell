@@ -12,6 +12,12 @@ PERSON="$SCRATCH/person"
 PROJECT="$SCRATCH/project"
 mkdir -p "$PERSON" "$PROJECT"
 
+# The first held write of a session is refused once with the rules. These
+# groups are about what is refused after that, so the rules count as shown;
+# test-rules-shown-at-the-first-shell-write.sh covers the first write itself.
+mkdir -p "$PERSON/.readable-shell/state/rules-shown"
+: > "$PERSON/.readable-shell/state/rules-shown/unknown"
+
 pass=0
 fail=0
 

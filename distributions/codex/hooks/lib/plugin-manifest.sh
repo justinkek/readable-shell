@@ -15,7 +15,7 @@ plugin_setting_default() {
     VERSION_SOURCE) printf '%s' 'https://raw.githubusercontent.com/justinkek/readable-shell/main/package.json' ;;
     RULES) printf '%s' 'both' ;;
     SCOPE) printf '%s' 'files' ;;
-    SHELLS) printf '%s' 'detect' ;;
+    SHELLS) printf '%s' 'bourne' ;;
     ABBREVIATIONS) printf '%s' 'acc arg attr cfg cmd ctx curr desc dir dst enc fp idx len msg num opt pos prev req res src str tmp val var' ;;
     ABBREVIATIONS_ADDED) printf '%s' '' ;;
     ABBREVIATIONS_ALLOWED) printf '%s' '' ;;
@@ -58,5 +58,4 @@ plugin_hook_on() {
 
 plugin_session_start_hooks() {
   :
-  printf '%s\n' 'load-rules.sh'
 }

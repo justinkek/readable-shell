@@ -1,5 +1,5 @@
-The rules are printed when a session starts, and a command, or a patch that
-adds a breach to a shell file, is refused before it runs. A patch changing
+The first patch that writes a shell file is refused once with the rules, and a
+patch that adds a breach to a shell file after that is refused before it runs. A patch changing
 several files is checked file by file, and the refusal names each shell file
 it caught.
 

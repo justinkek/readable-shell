@@ -1,6 +1,6 @@
 {
 	"name": "readable-shell",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"description": "Refuses shortened variable names and short-form options in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
 	"displayName": "readable-shell",
 	"license": "MIT",
@@ -16,9 +16,6 @@
 		"rules"
 	],
 	"hooks": {
-		"session_start": [
-			"load-rules.sh"
-		],
 		"before_tool": [
 			{
 				"script": "guard-shell-readability.sh",
@@ -54,8 +51,8 @@
 		},
 		"SHELLS": {
 			"kind": "text",
-			"default": "detect",
-			"says": "which shells' files are held to the rules and have their rules printed, space separated. `detect` takes whichever the project holds. The shells known are `bourne`: sh, bash, zsh, ksh, dash, ash and mksh"
+			"default": "bourne",
+			"says": "which shells' files are held to the rules, space separated. The shells known are `bourne`: sh, bash, zsh, ksh, dash, ash and mksh. `detect` holds every known shell"
 		},
 		"ABBREVIATIONS": {
 			"kind": "text",
