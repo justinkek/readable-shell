@@ -1,6 +1,6 @@
 {
 	"name": "readable-shell",
-	"version": "0.7.0",
+	"version": "0.8.0",
 	"description": "Refuses shortened variable names, long pipelines outside a function and scripts that end in an if, and notes short-form options, in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
 	"displayName": "readable-shell",
 	"license": "MIT",
@@ -51,7 +51,7 @@
 		},
 		"ABBREVIATIONS": {
 			"kind": "text",
-			"default": "acc arg attr cfg cmd ctx curr desc dir dst enc fp idx len msg num opt pos prev req res src str tmp val var",
+			"default": "acc arg args arr attr attrs btn buf cb cfg cmd conf ctx cur curr db decl decls def dep deps desc dest dev dir dirs dist doc docs dst e el elem elems enc env envs err ev evt expr exprs ext exts fn fp func i ident idents idx j len lib mod msg num obj opt opts param params perf pkg pos prev prod prop props proto ref refs rel repo req res ret retval sep src stmt stmts str tbl temp tit tmp util utils val var vars ver",
 			"says": "the shortened variable names refused, space separated. Setting it replaces the whole list"
 		},
 		"ABBREVIATIONS_ADDED": {

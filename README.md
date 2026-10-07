@@ -64,7 +64,7 @@ READABLE_SHELL_COMMANDS_QUIET_ADDED = protoc
 | `READABLE_SHELL_RULES` | all five | which rules hold, from `names options functions constants early-exits`; a rule left out is neither checked nor shown |
 | `READABLE_SHELL_SCOPE` | `files` | `files` for shell written into files, `commands` for commands an agent runs, `both` for the two |
 | `READABLE_SHELL_SHELLS` | `bourne` | which shells' files are held; `detect` holds every known shell |
-| `READABLE_SHELL_ABBREVIATIONS` | 26 words | the shortened names refused; setting it replaces the list |
+| `READABLE_SHELL_ABBREVIATIONS` | 93 words | the shortened names refused; setting it replaces the list |
 | `READABLE_SHELL_ABBREVIATIONS_ADDED` | unset | names refused on top of the list |
 | `READABLE_SHELL_ABBREVIATIONS_ALLOWED` | unset | names taken off the list |
 | `READABLE_SHELL_COMMANDS_QUIET` | the built-ins and the classic Unix tools | the commands whose short options are never noted; setting it replaces the list |

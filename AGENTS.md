@@ -103,6 +103,7 @@ request to hold this:
 | Change | File |
 | --- | --- |
 | a rule a session is told | `rules/` |
+| a word added to or taken off the abbreviation list | `ABBREVIATIONS` in `plugin.json`; the list began as eslint-plugin-unicorn's, credited in `NOTICE.md`, and is kept here |
 | a setting, its kind and its default | `plugin.json` |
 | how the lists, the scans and the shells are read | `hooks/readable-shell-lib.sh` |
 | what is refused, and what the refusal says | `hooks/guard-shell-readability.sh` |
