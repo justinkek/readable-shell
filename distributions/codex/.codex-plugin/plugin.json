@@ -1,10 +1,10 @@
 {
 	"name": "readable-shell",
-	"version": "0.4.0",
-	"description": "Refuses shortened variable names and short-form options in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
+	"version": "0.5.0",
+	"description": "Refuses shortened variable names, short-form options, long pipelines outside a function and scripts that end in an if, in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
 	"hooks": "./hooks/hooks.json",
 	"interface": {
 		"displayName": "readable-shell",
-		"shortDescription": "Refuses shortened variable names and short-form options in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both."
+		"shortDescription": "Refuses shortened variable names, short-form options, long pipelines outside a function and scripts that end in an if, in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both."
 	}
 }
