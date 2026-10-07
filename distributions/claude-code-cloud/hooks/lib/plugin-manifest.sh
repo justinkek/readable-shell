@@ -13,7 +13,7 @@ plugin_setting_default() {
     UPDATE_CHECK) printf '%s' 'on' ;;
     UPDATE_CHECK_DAYS) printf '%s' '1' ;;
     VERSION_SOURCE) printf '%s' 'https://raw.githubusercontent.com/justinkek/readable-shell/main/package.json' ;;
-    RULES) printf '%s' 'both' ;;
+    RULES) printf '%s' 'names options functions constants early-exits' ;;
     SCOPE) printf '%s' 'files' ;;
     SHELLS) printf '%s' 'bourne' ;;
     ABBREVIATIONS) printf '%s' 'acc arg attr cfg cmd ctx curr desc dir dst enc fp idx len msg num opt pos prev req res src str tmp val var' ;;
@@ -31,7 +31,7 @@ plugin_setting_kind() {
     UPDATE_CHECK) printf '%s' 'switch' ;;
     UPDATE_CHECK_DAYS) printf '%s' 'count' ;;
     VERSION_SOURCE) printf '%s' 'text' ;;
-    RULES) printf '%s' 'choice' ;;
+    RULES) printf '%s' 'text' ;;
     SCOPE) printf '%s' 'choice' ;;
     SHELLS) printf '%s' 'text' ;;
     ABBREVIATIONS) printf '%s' 'text' ;;
@@ -45,7 +45,6 @@ plugin_setting_kind() {
 
 plugin_setting_values() {
   case "$1" in
-    RULES) printf '%s' 'both names options' ;;
     SCOPE) printf '%s' 'both files commands' ;;
   esac
 }

@@ -45,7 +45,7 @@ layout_offences() {
   after="$(file_after_change "$kind" "$file_path" "$added" "$removed")" || return 0
   before=""
   [ -f "$file_path" ] && before="$(cat "$file_path")"
-  comm -23 <(scan_layout "$after" | sort --unique) <(scan_layout "$before" | sort --unique)
+  comm -23 <(scan_layout "$after" | sort --unique) <(scan_layout "$before" | sort --unique) | layout_held
 }
 
 refusals=""

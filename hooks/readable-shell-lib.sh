@@ -15,12 +15,29 @@ known_shells="bourne"
 bourne_file_names='(^|/)([^/]*\.(sh|bash|zsh|ksh|dash|ash|mksh)|\.?(bashrc|bash_profile|bash_login|bash_logout|zshrc|zprofile|zshenv|zlogin|zlogout|profile|kshrc|mkshrc))$'
 bourne_opening_line='^#![[:space:]]*[^[:space:]]*/(env[[:space:]]+(-[^[:space:]]+[[:space:]]+)*)?(sh|bash|zsh|ksh|dash|ash|mksh)([[:space:]]|$)'
 
-# Whether RULES holds the rule named: names or options.
+# Whether RULES holds the rule named: names, options, functions, constants or
+# early-exits. Before 0.6.0 RULES was a choice whose both meant every rule
+# there was, so both still means every rule.
 rule_holds() {
-  case "$(setting_value RULES)" in
-    both | "$1") return 0 ;;
+  local held
+  held=" $(setting_value RULES) "
+  case "$held" in
+    *" both "*) return 0 ;;
+    *" $1 "*) return 0 ;;
   esac
   return 1
+}
+
+# The layout breaches read on standard input whose rule RULES holds.
+layout_held() {
+  local line
+  while IFS= read -r line; do
+    case "$line" in
+      "pipeline: "*) rule_holds functions || continue ;;
+      "early exit: "*) rule_holds early-exits || continue ;;
+    esac
+    printf '%s\n' "$line"
+  done
 }
 
 # Whether SCOPE holds what is named: files or commands.
@@ -98,6 +115,7 @@ rules_text() {
   fi
   [ -n "$for_a_file" ] || return 0
   for layout in functions constants early-exits; do
+    rule_holds "$layout" || continue
     layout="$rules/files-$layout.md"
     [ -f "$layout" ] || continue
     [ -n "$first" ] || printf '\n'
