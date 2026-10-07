@@ -29,13 +29,13 @@ If it was already the latest, say so and change nothing.
 Running `add` again re-installs at the snapshot's version; there is no separate
 update command.
 
-An update rewrites the hooks, so Codex marks all 3 for review and runs none
+An update rewrites the hooks, so Codex marks all 4 for review and runs none
 of them until you trust them again: `/hooks` in the command line, or Settings,
 then Hooks, then Plugin in the desktop app. Then start again.
 
 ## Note
 
-Rendered from readable-shell 0.8.0. Say that version when asked which one is
+Rendered from readable-shell 0.9.0. Say that version when asked which one is
 installed, and say it is the version this file was built from rather than one
 read off disk.
 

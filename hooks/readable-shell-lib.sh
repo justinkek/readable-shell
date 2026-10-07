@@ -189,14 +189,6 @@ scan_names() {
   esac
 }
 
-# Every breach in the text, for the rules that hold.
-scan() {
-  local text="$1" shell="$2"
-  [ -n "$text" ] || return 0
-  if rule_holds options; then scan_options "$text"; fi
-  if rule_holds names; then scan_names "$text" "$shell"; fi
-}
-
 # Every breach of the two layout rules a pattern can decide, in a whole shell
 # file: a pipeline of more than three stages outside a function, as
 # `pipeline: <the pipeline>`, and a script or function whose last statement is
@@ -416,4 +408,40 @@ file_after_change() {
     *) return 1 ;;
   esac
   printf '%s%s%s' "${before%%"$removed"*}" "$added" "${before#*"$removed"}"
+}
+
+# One field of the tool call entry in $entry.
+entry_field() { jq --raw-output ".$1" <<< "$entry"; }
+
+# Reads the tool call entry in $entry into kind, subject, shell, added and
+# removed, and fails for an entry the rules do not hold. A relative path is
+# read from the directory named.
+held_entry() {
+  kind="$(jq --raw-output .kind <<< "$entry")"
+  case "$kind" in
+    bash)
+      scope_holds commands || return 1
+      added="$(entry_field command)"
+      removed=""
+      subject="this command"
+      shell="bourne"
+      ;;
+    write | edit | multi_edit)
+      scope_holds files || return 1
+      file_path="$(entry_field file)"
+      case "$file_path" in
+        /*) ;;
+        *) file_path="$1/$file_path" ;;
+      esac
+      added="$(entry_field added)"
+      removed="$(entry_field removed)"
+      shell="$(shell_of_file "$file_path" "$added")"
+      [ -n "$shell" ] || return 1
+      shell_held_in_files "$shell" || return 1
+      subject="$file_path"
+      ;;
+    *) return 1 ;;
+  esac
+
+  return 0
 }
