@@ -1,7 +1,7 @@
 {
 	"name": "readable-shell",
-	"version": "0.6.0",
-	"description": "Refuses shortened variable names, short-form options, long pipelines outside a function and scripts that end in an if, in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
+	"version": "0.7.0",
+	"description": "Refuses shortened variable names, long pipelines outside a function and scripts that end in an if, and notes short-form options, in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
 	"displayName": "readable-shell",
 	"license": "MIT",
 	"repository": "justinkek/readable-shell",
@@ -64,20 +64,15 @@
 			"unset": "unset, nothing allowed",
 			"says": "names taken off the list, such as `ctx` for a Go project or `req res` for an Express one"
 		},
-		"COMMANDS": {
+		"COMMANDS_QUIET": {
 			"kind": "text",
-			"default": "aws brew curl docker gcloud gh git grep jq kubectl mise node npm npx pip3 python3 rsync sort ssh tar wget",
-			"says": "the commands whose short options are refused, space separated. Setting it replaces the whole list. Say that a command is listed only where every option in use has a long form"
+			"default": "[ [[ test set read export local declare readonly typeset unset shift return exit printf echo cd pwd trap wait eval exec source command type hash ulimit umask alias getopts let awk basename cat chmod chown comm cp cut date df diff dirname du env file find head hostname id kill ln ls mkdir mktemp mv nohup od paste ps python python3 rm rmdir scp sed sleep ssh stat tail tee tmux touch tr uname uniq wc which xargs",
+			"says": "the commands whose short options are never noted, because they take no long form that works on both Linux and macOS, space separated. Setting it replaces the whole list"
 		},
-		"COMMANDS_ADDED": {
+		"COMMANDS_QUIET_ADDED": {
 			"kind": "text",
 			"unset": "unset, nothing added",
-			"says": "commands held to long options on top of the list, such as `terraform duckdb`"
-		},
-		"SHORT_OPTIONS_ALLOWED": {
-			"kind": "text",
-			"default": "git:-C tar:-C",
-			"says": "short options that have no long form, each as `command:option`, space separated. Setting it replaces the whole list"
+			"says": "commands left quiet on top of the list, such as a project's own scripts"
 		}
 	}
 }

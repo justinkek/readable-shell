@@ -72,7 +72,7 @@ the session ends, so nothing is left after that.
 
 ## Note
 
-Rendered from readable-shell 0.6.0. Say that version when asked which one is
+Rendered from readable-shell 0.7.0. Say that version when asked which one is
 installed, and say it is the version this file was built from rather than one
 read off disk.
 

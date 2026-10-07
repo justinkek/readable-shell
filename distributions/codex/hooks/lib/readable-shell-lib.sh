@@ -137,12 +137,12 @@ abbreviations() {
   done
 }
 
-# Every short option on a command that takes long ones, as `option: command -x`.
-# Quoted text is data rather than a command, so it is taken out first.
+# Every short option on a command not left quiet, as `option: command -x`.
+# Quoted text is data rather than a command, so it is taken out first, and a
+# substitution or a group starts a command of its own.
 scan_options() {
-  local text="$1" unquoted segment head_word token held_commands allowed_options
-  held_commands=" $(setting_value COMMANDS) $(setting_value COMMANDS_ADDED) "
-  allowed_options=" $(setting_value SHORT_OPTIONS_ALLOWED) "
+  local text="$1" unquoted segment head_word token quiet_commands
+  quiet_commands=" $(setting_value COMMANDS_QUIET) $(setting_value COMMANDS_QUIET_ADDED) "
   unquoted="$(printf '%s\n' "$text" | sed -E "s/'[^']*'//g; s/\"[^\"]*\"//g")"
 
   while IFS= read -r segment; do
@@ -152,28 +152,26 @@ scan_options() {
     set -- $segment
     while [ $# -gt 0 ]; do
       case "$1" in
-        if | while | until | then | do | done | elif | else | fi | '!' | time | sudo | nohup | exec | command) shift ;;
+        if | while | until | then | do | done | elif | else | fi | '!' | '{' | '}' | time | sudo | nohup | exec | command) shift ;;
+        [A-Za-z_]*=*) shift ;;
         *) break ;;
       esac
     done
     [ $# -gt 0 ] || continue
     head_word="${1##*/}"
-    case "$held_commands" in
-      *" $head_word "*) ;;
-      *) continue ;;
+    case "$head_word" in
+      *[!A-Za-z0-9._+-]*) continue ;;
+    esac
+    case "$quiet_commands" in
+      *" $head_word "*) continue ;;
     esac
     shift
     for token in "$@"; do
       case "$token" in
-        -[A-Za-z] | -[A-Za-z][A-Za-z]*) ;;
-        *) continue ;;
+        -[A-Za-z] | -[A-Za-z][A-Za-z]*) printf 'option: %s %s\n' "$head_word" "$token" ;;
       esac
-      case "$allowed_options" in
-        *" $head_word:$token "*) continue ;;
-      esac
-      printf 'option: %s %s\n' "$head_word" "$token"
     done
-  done <<< "$(printf '%s\n' "$unquoted" | tr '|;&' '\n\n\n')"
+  done <<< "$(printf '%s\n' "$unquoted" | tr '|;&()`' '\n\n\n\n\n\n')"
 }
 
 # Every shortened name assigned, as `name: enc`, in the syntax of the shell named.

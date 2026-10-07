@@ -20,13 +20,9 @@ checkout at `../ai-plugin-sdk`, or wherever `AI_PLUGIN_SDK` names.
 
 ## What it is and is not
 
-Two rules, refused at edit time with no escape hatch: every variable name is a
-whole word, and every option on a command known to take long ones is written in
-its long form. It is a legibility guard. It checks nothing shellcheck checks,
-and nothing it refuses is a bug.
+Every variable name is a whole word, refused at edit time with no escape hatch. Every option is written in its long form where the command takes one that works on both Linux and macOS, noted at edit time and never refused. It is a legibility guard. It checks nothing shellcheck checks, and nothing it refuses is a bug.
 
-Both lists are hand-kept rather than general, on purpose: a guard that argues
-about a legitimate `-n` is one people turn off. Precision over recall.
+Which commands take portable long forms is not kept as a list: there are too many, and they differ between Linux and macOS. The agent judges each one from the note. The one list kept is of commands that take none, `COMMANDS_QUIET`, and a command missing from it costs a needless note rather than a wrong refusal.
 
 ## Layout rules
 
@@ -37,7 +33,7 @@ Each rule is split into what a pattern decides and what needs the code's meaning
 | Rule | Refused by the guard | Left to an AI review |
 | --- | --- | --- |
 | whole-word names | a name on the abbreviation list | a whole word that says nothing, like `data` |
-| long options | a short option on a listed command | nothing |
+| long options | nothing; a short option on a command not left quiet is noted | whether the command takes a portable long form |
 | named functions | a pipeline of more than three stages outside a function | logic written twice |
 | named constants | nothing | a number or path that carries meaning |
 | early exits | a script or function whose last statement is an `if` of more than one line with no `else` | nothing |
@@ -75,7 +71,7 @@ families there are, and Bourne is the only one so far.
 
 | Part | Shared across shells | Per shell |
 | --- | --- | --- |
-| long-option rule and its command list | all of it | nothing |
+| long-option rule and its quiet list | all of it | nothing |
 | abbreviation list | all of it | nothing |
 | assignment pattern | nothing | `scan_names`, one arm per family |
 | file names and opening lines | nothing | one pattern each |
