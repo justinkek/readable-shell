@@ -1,12 +1,12 @@
 {
 	"name": "readable-shell",
-	"version": "0.8.0",
+	"version": "0.9.0",
 	"description": "Refuses shortened variable names, long pipelines outside a function and scripts that end in an if, and notes short-form options, in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
 	"displayName": "readable-shell",
 	"license": "MIT",
 	"repository": "justinkek/readable-shell",
 	"ai-plugin-sdk": {
-		"version": "0.7.3"
+		"version": "0.7.4"
 	},
 	"author": {
 		"name": "Justin Kek",
@@ -19,6 +19,17 @@
 		"before_tool": [
 			{
 				"script": "guard-shell-readability.sh",
+				"on": [
+					"bash",
+					"write",
+					"edit",
+					"multi_edit"
+				]
+			}
+		],
+		"after_tool": [
+			{
+				"script": "note-short-options.sh",
 				"on": [
 					"bash",
 					"write",

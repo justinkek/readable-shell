@@ -11,6 +11,17 @@
 				]
 			}
 		],
+		"PostToolUse": [
+			{
+				"matcher": "^(Bash|apply_patch)$",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"${PLUGIN_ROOT}/hooks/note-short-options.sh\""
+					}
+				]
+			}
+		],
 		"UserPromptSubmit": [
 			{
 				"hooks": [

@@ -50,6 +50,7 @@ plugin_setting_values() {
 plugin_hook_on() {
   case "$1" in
     'guard-shell-readability.sh') printf '%s\n' 'bash' 'write' 'edit' 'multi_edit' ;;
+    'note-short-options.sh') printf '%s\n' 'bash' 'write' 'edit' 'multi_edit' ;;
   esac
 }
 

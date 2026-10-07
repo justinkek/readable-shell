@@ -23,17 +23,27 @@ fail=0
 
 # Most groups hold both files and commands to the rules, so each says what it
 # checks; the default, files alone, has a group of its own at the end.
+# A call goes to the guard before it runs and to the note after, as a client
+# sends it. A refused call never runs, so it never reaches the note.
+both_hooks() {
+  local call answer
+  call="$(cat)"
+  answer="$(printf '%s' "$call" | bash "$HOOK" 2>/dev/null)"
+  if [ -n "$answer" ]; then printf '%s' "$answer"; return 0; fi
+  printf '%s' "$call" | bash "${HOOK%/*}/note-short-options.sh" 2>/dev/null
+}
+
 guarded() {
   (
     for key in $(env | sed -n 's/^\(READABLE_SHELL_[A-Z_]*\)=.*/\1/p'); do unset "$key"; done
-    cd "$PROJECT" && env HOME="$PERSON" READABLE_SHELL_SCOPE=both "$@" bash "$HOOK" 2>/dev/null
+    cd "$PROJECT" && export HOME="$PERSON" READABLE_SHELL_SCOPE=both "$@" && both_hooks
   )
 }
 
 guarded_by_default() {
   (
     for key in $(env | sed -n 's/^\(READABLE_SHELL_[A-Z_]*\)=.*/\1/p'); do unset "$key"; done
-    cd "$PROJECT" && env HOME="$PERSON" "$@" bash "$HOOK" 2>/dev/null
+    cd "$PROJECT" && export HOME="$PERSON" "$@" && both_hooks
   )
 }
 
@@ -257,15 +267,6 @@ else
   fail=$((fail + 1))
 fi
 
-refused="$(run_bash 'enc=1; git commit -m x')"
-printf '%s' "$refused" | grep --quiet --fixed-strings 'Short-form options added in this command - git -m'
-if [ "$?" = "0" ]; then
-  printf "  PASS  a refusal for a name carries the option note too\n"
-  pass=$((pass + 1))
-else
-  printf "  FAIL  a refusal for a name carries the option note too - got '%s'\n" "$refused"
-  fail=$((fail + 1))
-fi
 
 printf "\nTest group: a Codex patch is held to the same rules, file by file\n"
 

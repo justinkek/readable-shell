@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
 # Refuses a command, or a change to a shell file, that adds a shortened
-# variable name, and notes each short-form option it adds rather than refusing
-# it: whether a command takes a long form that works everywhere is the agent's
-# to judge, so a list of them is never kept. A change to a shell file is also
+# variable name. Short-form options are noted after the write by
+# note-short-options.sh rather than refused here. A change to a shell file is also
 # refused for a pipeline of more than three stages outside a function, and for
 # a script or function that ends in an if with no else. Only what is newly
 # added counts, so a change carrying an old breach past unchanged is not
@@ -27,13 +26,11 @@ command -v jq >/dev/null 2>&1 || exit 0
 . "$(dirname "$0")/lib/tool.sh"
 . "$(dirname "$0")/lib/permission.sh"
 . "$(dirname "$0")/lib/state.sh"
-. "$(dirname "$0")/lib/say.sh"
 
 apply_migrations
 
 settings_from_project "$(hook_field "$payload" cwd)"
 
-field() { jq --raw-output ".$1" <<< "$entry"; }
 
 # The offences of one kind, joined by the separator given.
 offences_of() {
@@ -51,35 +48,10 @@ layout_offences() {
 }
 
 refusals=""
-notes=""
 first_shell=""
 first_for_a_file=""
 while IFS= read -r entry; do
-  kind="$(field kind)"
-  case "$kind" in
-    bash)
-      scope_holds commands || continue
-      added="$(field command)"
-      removed=""
-      subject="this command"
-      shell="bourne"
-      ;;
-    write | edit | multi_edit)
-      scope_holds files || continue
-      file_path="$(field file)"
-      case "$file_path" in
-        /*) ;;
-        *) file_path="$(hook_field "$payload" cwd)/$file_path" ;;
-      esac
-      added="$(field added)"
-      removed="$(field removed)"
-      shell="$(shell_of_file "$file_path" "$added")"
-      [ -n "$shell" ] || continue
-      shell_held_in_files "$shell" || continue
-      subject="$file_path"
-      ;;
-    *) continue ;;
-  esac
+  held_entry "$(hook_field "$payload" cwd)" || continue
 
   [ -n "$added" ] || continue
 
@@ -88,15 +60,15 @@ while IFS= read -r entry; do
     [ "$subject" = "this command" ] || first_for_a_file=1
   fi
 
-  offences="$(comm -23 \
-    <(scan "$added" "$shell" | sort --unique) \
-    <(scan "$removed" "$shell" | sort --unique))"
+  offences=""
+  if rule_holds names; then
+    offences="$(comm -23 \
+      <(scan_names "$added" "$shell" | sort --unique) \
+      <(scan_names "$removed" "$shell" | sort --unique))"
+  fi
   [ "$subject" = "this command" ] || offences="${offences:+$offences
 }$(layout_offences)"
   [ -n "$offences" ] || continue
-
-  found="$(offences_of option ",")"
-  [ -n "$found" ] && notes="${notes:+$notes; }${subject} - ${found}"
 
   detail=""
   for part in \
@@ -115,20 +87,13 @@ done < <(tool_entries "$payload")
 session_id="$(hook_field "$payload" session_id | tr -c 'A-Za-z0-9_-' '_')"
 if [ -n "$first_shell" ] && ! plugin_mark_once "rules-shown/${session_id:-unknown}"; then
   shown="$(rules_text "$first_shell" "$first_for_a_file")"
-  hook_permission deny "readable-shell holds the shell in this session to the rules below. This first write is refused so they can be read; redo it following them.${refusals:+ It also breaks them in ${refusals}.}${notes:+ It also uses short-form options in ${notes}.}
+  hook_permission deny "readable-shell holds the shell in this session to the rules below. This first write is refused so they can be read; redo it following them.${refusals:+ It also breaks them in ${refusals}.}
 
 $shown"
   exit 0
 fi
 
-option_note="Short-form options added in ${notes}. Where a command takes a long form of an option that works on both Linux and macOS, write that instead. Where it takes none, the short one stands, and where the line's options do not say what it does, call it through a function named for what it does. A command that takes no long forms at all can be left quiet by the user in ${PLUGIN_PREFIX}_COMMANDS_QUIET_ADDED."
+[ -n "$refusals" ] || exit 0
 
-if [ -n "$refusals" ]; then
-  hook_permission deny "Unreadable shell denied in ${refusals}. Spell every variable name out as the whole word, give a pipeline of more than three stages a function named for what it returns, and end a script or function as soon as a condition rules out the rest rather than nesting the rest inside an if, then retry. There is no escape hatch - do not ask, do not work around this deny.${notes:+ $option_note}"
-  exit 0
-fi
-
-[ -n "$notes" ] || exit 0
-event="$(hook_event_of "$payload")"
-printf '%s' "$option_note" | hook_say "${event:-PreToolUse}"
+hook_permission deny "Unreadable shell denied in ${refusals}. Spell every variable name out as the whole word, give a pipeline of more than three stages a function named for what it returns, and end a script or function as soon as a condition rules out the rest rather than nesting the rest inside an if, then retry. There is no escape hatch - do not ask, do not work around this deny."
 exit 0
