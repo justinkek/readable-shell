@@ -32,13 +32,14 @@ The commands an agent runs are left alone by default: a command is read once,
 if at all, and a rule that refuses it costs retries. Set `SCOPE` to `both` to
 hold them to the rules too.
 
-Three more rules say how a shell file is laid out. Nothing refuses a breach of
-them yet:
+Three more rules say how a shell file is laid out. The guard refuses the parts
+of them a pattern can decide, and the rest are shown to the agent:
 
-- a pipeline of more than three stages, or logic used twice, goes in a named
-  function
-- a number or path that carries meaning gets a name
-- a script or function exits early rather than nesting its work in an `if`
+| Rule | Refused |
+| --- | --- |
+| a pipeline of more than three stages, or logic used twice, goes in a named function | a pipeline of more than three stages outside a function |
+| a number or path that carries meaning gets a name | nothing |
+| a script or function exits early rather than nesting its work in an `if` | a script or function whose last statement is an `if` of more than one line with no `else` |
 
 ## Settings
 

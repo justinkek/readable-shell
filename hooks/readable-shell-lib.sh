@@ -180,3 +180,224 @@ scan() {
   if rule_holds options; then scan_options "$text"; fi
   if rule_holds names; then scan_names "$text" "$shell"; fi
 }
+
+# Every breach of the two layout rules a pattern can decide, in a whole shell
+# file: a pipeline of more than three stages outside a function, as
+# `pipeline: <the pipeline>`, and a script or function whose last statement is
+# an if of more than one line with no else, as `early exit: <function>`.
+# Quoted text, comments and here-documents are data, so they are taken out
+# first.
+layout_program="$(cat <<'AWK'
+function trim(text) { sub(/^[ \t]+/, "", text); sub(/[ \t]+$/, "", text); return text }
+
+# The line with quoted text and comments taken out. A command substitution
+# inside double quotes is code again, so the quoting is kept as a stack, and
+# it runs across lines, so the stack is kept from one line to the next.
+function unquoted(line,    out, position, character, rest) {
+  out = ""
+  for (position = 1; position <= length(line); position++) {
+    character = substr(line, position, 1)
+    if (quoting[depth] == "single") {
+      if (character == "'") { depth--; out = out "…" }
+      continue
+    }
+    if (quoting[depth] == "escaped") {
+      if (character == "\\") { position++; continue }
+      if (character == "'") { depth--; out = out "…" }
+      continue
+    }
+    if (quoting[depth] == "double") {
+      if (character == "\\") { position++; continue }
+      if (character == "\"") { depth--; out = out "…"; continue }
+      if (substr(line, position, 2) == "$(") { quoting[++depth] = "code"; parens[depth] = 0; position++; out = out "(" }
+      continue
+    }
+    if (character == "\\") { out = out substr(line, position, 2); position++; continue }
+    if (character == "'") { quoting[++depth] = (substr(line, position - 1, 1) == "$") ? "escaped" : "single"; continue }
+    if (character == "\"") { quoting[++depth] = "double"; continue }
+    if (depth > 0 && character == "(") parens[depth]++
+    if (depth > 0 && character == ")") {
+      if (parens[depth] == 0) { depth--; out = out ")"; continue }
+      parens[depth]--
+    }
+    if (character == "#" && (position == 1 || substr(line, position - 1, 1) ~ /[ \t;]/)) break
+    if (character == "<" && substr(line, position, 2) == "<<" && substr(line, position + 2, 1) != "<") {
+      rest = substr(line, position + 2)
+      strip_tabs = (substr(rest, 1, 1) == "-")
+      sub(/^-/, "", rest)
+      sub(/^[ \t]*/, "", rest)
+      gsub(/['"\\]/, "", rest)
+      match(rest, /^[A-Za-z0-9_]+/)
+      if (RSTART > 0) document_end = substr(rest, 1, RLENGTH)
+    }
+    out = out character
+  }
+  return out
+}
+
+# The most stages in any one pipeline of the text. A pipeline inside
+# parentheses is a pipeline of its own, so its bars are counted apart.
+function longest_pipeline(text,    position, character, level, group, groups, bars, longest) {
+  level = 0
+  groups = 1
+  group[0] = 1
+  bars[1] = 0
+  longest = 0
+  for (position = 1; position <= length(text); position++) {
+    character = substr(text, position, 1)
+    if (character == "(") { group[++level] = ++groups; bars[groups] = 0 }
+    else if (character == ")" && level > 0) level--
+    else if (character == "|" && ++bars[group[level]] > longest) longest = bars[group[level]]
+  }
+  return longest + 1
+}
+
+function begin_frame(name) {
+  frames++
+  frame_name[frames] = name
+  frame_braces[frames] = -1
+  frame_blocks[frames] = 0
+  frame_last[frames] = ""
+  frame_else[frames] = 0
+  frame_if_lines[frames] = 0
+}
+
+function end_frame() {
+  if (frame_last[frames] == "if" && !frame_else[frames] && frame_if_lines[frames] > 1)
+    print "early exit: " frame_name[frames]
+  frames--
+}
+
+function inside_a_function() { return frames > 1 && frame_braces[frames] >= 0 }
+
+# A statement starting at the top of the current function or script.
+function statement(kind) {
+  if (frame_blocks[frames] != 0) return
+  frame_last[frames] = kind
+  frame_else[frames] = 0
+  frame_if_lines[frames] = 0
+  if (kind == "if") opened_an_if = 1
+}
+
+function command(text,    word) {
+  text = trim(text)
+  while (text != "") {
+    word = text
+    sub(/[ \t].*/, "", word)
+    if (word == "then" || word == "do" || word == "!" || word == "time") {
+      text = trim(substr(text, length(word) + 1))
+      continue
+    }
+    if (word == "else" || word == "elif") {
+      if (frame_blocks[frames] == 1 && frame_last[frames] == "if") frame_else[frames] = 1
+      if (word == "elif") return
+      text = trim(substr(text, length(word) + 1))
+      continue
+    }
+    break
+  }
+  if (text == "") return
+  if (word == "if") { statement("if"); frame_blocks[frames]++; blocks[++block_depth] = "if"; return }
+  if (word == "case") { statement("other"); frame_blocks[frames]++; blocks[++block_depth] = "case"; return }
+  if (word == "while" || word == "until" || word == "for" || word == "select") {
+    statement("other"); frame_blocks[frames]++; blocks[++block_depth] = "loop"; return
+  }
+  if (word == "fi" || word == "esac" || word == "done") {
+    if (frame_blocks[frames] > 0) frame_blocks[frames]--
+    if (block_depth > 0) block_depth--
+    return
+  }
+  if (word == "{") {
+    braces++
+    if (frames > 1 && frame_braces[frames] < 0) { frame_braces[frames] = braces; return }
+    statement("other")
+    return
+  }
+  if (word == "}") {
+    if (frames > 1 && frame_braces[frames] == braces) end_frame()
+    braces--
+    return
+  }
+  statement("other")
+}
+
+function logical_line(line,    piece_text, header, name, pieces, piece_count, piece, stages, stage_count, stage, parts, part_count, part) {
+  opened_an_if = 0
+  gsub(/[0-9]*>&[0-9-]*|&>|\|&/, " ", line)
+  header = line
+  if (match(header, /^[ \t]*function[ \t]+[^ \t(){}]+([ \t]*\(\))?|^[ \t]*[A-Za-z_][A-Za-z0-9_:.-]*[ \t]*\(\)/)) {
+    name = substr(header, RSTART, RLENGTH)
+    sub(/^[ \t]*(function[ \t]+)?/, "", name)
+    sub(/[ \t]*\(\)$/, "", name)
+    line = substr(line, RSTART + RLENGTH)
+    begin_frame(name)
+  }
+  piece_count = split(line, pieces, /;;|;|&&|\|\||&/)
+  for (piece = 1; piece <= piece_count; piece++) {
+    # A case pattern's bars separate words, not stages.
+    sub(/^[ \t]*case[ \t]+[^ \t]+[ \t]+in[ \t]+\(?[^()]*\)/, "case … in ", pieces[piece])
+    if (block_depth > 0 && blocks[block_depth] == "case")
+      sub(/^[ \t]*\(?[^()]*\)/, "", pieces[piece])
+    stage_count = split(pieces[piece], stages, /\|/)
+    for (stage = 1; stage <= stage_count; stage++) {
+      part_count = split(stages[stage], parts, /[()`]/)
+      for (part = 1; part <= part_count; part++) command(parts[part])
+    }
+    if (longest_pipeline(pieces[piece]) > 3 && !inside_a_function()) {
+      piece_text = trim(pieces[piece])
+      gsub(/[ \t]+/, " ", piece_text)
+      print "pipeline: " substr(piece_text, 1, 60)
+    }
+  }
+  if (frame_last[frames] == "if" && frame_blocks[frames] > 0 && !opened_an_if) frame_if_lines[frames]++
+}
+
+BEGIN { depth = 0; quoting[0] = "code"; frames = 0; begin_frame("the script"); braces = 0; block_depth = 0 }
+
+{
+  if (in_document != "") {
+    check = $0
+    if (in_document_tabs) sub(/^\t+/, "", check)
+    if (check == in_document) in_document = ""
+    next
+  }
+  document_end = ""
+  cleaned = unquoted($0)
+  if (document_end != "") { in_document = document_end; in_document_tabs = strip_tabs }
+  pending = pending cleaned
+  if (depth > 0) { sub(/\\[ \t]*$/, "", pending); pending = pending " "; next }
+  if (pending ~ /(\\|\||&&)[ \t]*$/) { sub(/\\[ \t]*$/, " ", pending); pending = pending " "; next }
+  logical_line(pending)
+  pending = ""
+}
+
+END {
+  if (pending != "") logical_line(pending)
+  while (frames > 1) frames--
+  end_frame()
+}
+AWK
+)"
+
+scan_layout() {
+  [ -n "$1" ] || return 0
+  printf '%s\n' "$1" | awk "$layout_program"
+}
+
+# What a file holds once a change lands: a write is the whole file, and an
+# edit is replaced into what the file holds now. A change whose removed text
+# the file does not hold, such as a patch's scattered lines, gives nothing.
+file_after_change() {
+  local kind="$1" path="$2" added="$3" removed="$4" before
+  if [ "$kind" = "write" ]; then
+    printf '%s' "$added"
+    return 0
+  fi
+  [ "$kind" = "edit" ] && [ -n "$removed" ] && [ -f "$path" ] || return 1
+  before="$(cat "$path")"
+  case "$before" in
+    *"$removed"*) ;;
+    *) return 1 ;;
+  esac
+  printf '%s%s%s' "${before%%"$removed"*}" "$added" "${before#*"$removed"}"
+}

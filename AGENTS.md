@@ -30,7 +30,28 @@ about a legitimate `-n` is one people turn off. Precision over recall.
 
 ## Layout rules
 
-`rules/files-functions.md`, `rules/files-constants.md` and `rules/files-early-exits.md` say how a shell file is laid out: named functions, named constants and early exits. They are shown with the first shell file a session writes, and never for a command, which has no layout. Nothing refuses a breach of them yet.
+`rules/files-functions.md`, `rules/files-constants.md` and `rules/files-early-exits.md` say how a shell file is laid out: named functions, named constants and early exits. They are shown with the first shell file a session writes, and never for a command, which has no layout.
+
+Each rule is split into what a pattern decides and what needs the code's meaning. The guard refuses the first half; the second half is for an AI review, which does not exist yet.
+
+| Rule | Refused by the guard | Left to an AI review |
+| --- | --- | --- |
+| whole-word names | a name on the abbreviation list | a whole word that says nothing, like `data` |
+| long options | a short option on a listed command | nothing |
+| named functions | a pipeline of more than three stages outside a function | logic written twice |
+| named constants | nothing | a number or path that carries meaning |
+| early exits | a script or function whose last statement is an `if` of more than one line with no `else` | nothing |
+
+A layout rule is about the whole file, so `scan_layout` reads the file as the change leaves it: a write is the whole file, and an edit is replaced into the file on disk. A change that cannot be placed in the file, such as a Codex patch's scattered lines, is not checked for layout. Only a breach the file did not already hold is refused.
+
+The plan, in order:
+
+| Check | During dev | In review |
+| --- | --- | --- |
+| what a pattern decides | this guard, at the write | `readable-shell check` in CI, not built yet |
+| what needs meaning | an AI review when the agent stops, not built yet | an AI review of the pull request, not built yet |
+
+The edit hook only sees writes from an agent with this plugin, so CI is what holds a change made any other way.
 
 ## Two paths, kept apart
 
