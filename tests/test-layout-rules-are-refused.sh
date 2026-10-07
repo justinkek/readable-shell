@@ -25,8 +25,10 @@ guarded() {
 }
 
 run_write() {
-  jq --null-input --compact-output --arg path "$1" --arg content "$2" \
-    '{tool_name:"Write",tool_input:{file_path:$path,content:$content}}' | guarded
+  local path="$1" content="$2"
+  shift 2
+  jq --null-input --compact-output --arg path "$path" --arg content "$content" \
+    '{tool_name:"Write",tool_input:{file_path:$path,content:$content}}' | guarded "$@"
 }
 
 run_edit() {
@@ -158,6 +160,24 @@ second' 'if [ -f x ]; then
   second
 fi')" \
   'ending in an if with no else: the script'
+
+printf "\nTest group: RULES says which layout checks hold\n"
+
+long_pipeline='ls | grep log | sort | tail -1'
+trailing_if='if [ -f "$1" ]; then
+  first
+  second
+fi'
+assert_silent "a pipeline passes with functions left out" \
+  "$(run_write "$SCRATCH/a.sh" "$long_pipeline" READABLE_SHELL_RULES='names options early-exits')"
+assert_denies_with "and a trailing if is still refused" \
+  "$(run_write "$SCRATCH/a.sh" "$trailing_if" READABLE_SHELL_RULES='names options early-exits')" \
+  'ending in an if with no else'
+assert_silent "a trailing if passes with early-exits left out" \
+  "$(run_write "$SCRATCH/a.sh" "$trailing_if" READABLE_SHELL_RULES='names options functions')"
+assert_denies_with "both, from before the list, still holds every rule" \
+  "$(run_write "$SCRATCH/a.sh" "$long_pipeline" READABLE_SHELL_RULES=both)" \
+  'pipeline(s) of more than three stages'
 
 printf "\n%d passed, %d failed\n" "$pass" "$fail"
 [ "$fail" -eq 0 ]

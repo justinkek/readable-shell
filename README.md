@@ -56,7 +56,7 @@ READABLE_SHELL_COMMANDS_ADDED = terraform
 
 | Setting | Default | What it does |
 | --- | --- | --- |
-| `READABLE_SHELL_RULES` | `both` | `names` or `options` to hold one rule alone |
+| `READABLE_SHELL_RULES` | all five | which rules hold, from `names options functions constants early-exits`; a rule left out is neither checked nor shown |
 | `READABLE_SHELL_SCOPE` | `files` | `files` for shell written into files, `commands` for commands an agent runs, `both` for the two |
 | `READABLE_SHELL_SHELLS` | `bourne` | which shells' files are held; `detect` holds every known shell |
 | `READABLE_SHELL_ABBREVIATIONS` | 26 words | the shortened names refused; setting it replaces the list |

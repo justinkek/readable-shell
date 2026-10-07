@@ -58,6 +58,13 @@ assert "the same write again goes through" "$?" "the rules were shown twice"
 [ -n "$(called two Write "$clean_script")" ]
 assert "a new session is shown them again" "$?" "it was not"
 
+narrowed="$(called narrowed Write "$clean_script" READABLE_SHELL_RULES='names options' | reason)"
+holds "$narrowed" "## Named functions"
+[ "$?" = "1" ]
+assert "a rule RULES leaves out is not shown" "$?" "Named functions was shown"
+holds "$narrowed" "## Whole-word variable names"
+assert "and a rule it holds still is" "$?" "Whole-word variable names was not shown"
+
 printf "\nTest group: a breach in the first write is named alongside the rules\n"
 
 breach="$(called three Write '{"file_path":"/tmp/probe.sh","content":"enc=1"}' | reason)"

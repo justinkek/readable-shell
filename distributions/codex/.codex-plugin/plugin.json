@@ -1,6 +1,6 @@
 {
 	"name": "readable-shell",
-	"version": "0.5.0",
+	"version": "0.6.0",
 	"description": "Refuses shortened variable names, short-form options, long pipelines outside a function and scripts that end in an if, in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
 	"hooks": "./hooks/hooks.json",
 	"interface": {
