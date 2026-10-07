@@ -19,7 +19,7 @@ plugin_setting_default() {
     ABBREVIATIONS) printf '%s' 'acc arg attr cfg cmd ctx curr desc dir dst enc fp idx len msg num opt pos prev req res src str tmp val var' ;;
     ABBREVIATIONS_ADDED) printf '%s' '' ;;
     ABBREVIATIONS_ALLOWED) printf '%s' '' ;;
-    COMMANDS) printf '%s' 'aws brew curl docker gcloud gh git grep jq kubectl mise node npm npx pip3 python3 rsync sort ssh tar wget' ;;
+    COMMANDS) printf '%s' 'aws brew curl docker gcloud gh git grep jq kubectl mise node npm npx pip3 python3 rsync sort tar wget' ;;
     COMMANDS_ADDED) printf '%s' '' ;;
     SHORT_OPTIONS_ALLOWED) printf '%s' 'git:-C tar:-C' ;;
   esac

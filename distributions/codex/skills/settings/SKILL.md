@@ -20,7 +20,7 @@ Blank lines and lines opening with `#` are ignored, and the last assignment of a
 | `READABLE_SHELL_ABBREVIATIONS` | `acc arg attr cfg cmd ctx curr desc dir dst enc fp idx len msg num opt pos prev req res src str tmp val var` | the shortened variable names refused, space separated. Setting it replaces the whole list |
 | `READABLE_SHELL_ABBREVIATIONS_ADDED` | unset, nothing added | shortened names refused on top of the list, such as `btn err resp` |
 | `READABLE_SHELL_ABBREVIATIONS_ALLOWED` | unset, nothing allowed | names taken off the list, such as `ctx` for a Go project or `req res` for an Express one |
-| `READABLE_SHELL_COMMANDS` | `aws brew curl docker gcloud gh git grep jq kubectl mise node npm npx pip3 python3 rsync sort ssh tar wget` | the commands whose short options are refused, space separated. Setting it replaces the whole list. Say that a command is listed only where every option in use has a long form |
+| `READABLE_SHELL_COMMANDS` | `aws brew curl docker gcloud gh git grep jq kubectl mise node npm npx pip3 python3 rsync sort tar wget` | the commands whose short options are refused, space separated. Setting it replaces the whole list. Say that a command is listed only where every option in use has a long form |
 | `READABLE_SHELL_COMMANDS_ADDED` | unset, nothing added | commands held to long options on top of the list, such as `terraform duckdb` |
 | `READABLE_SHELL_SHORT_OPTIONS_ALLOWED` | `git:-C tar:-C` | short options that have no long form, each as `command:option`, space separated. Setting it replaces the whole list |
 
@@ -91,7 +91,7 @@ run the reload skill to be given it again with the new one.
 
 ## Note
 
-Rendered from readable-shell 0.6.0. Say that version when asked which one is
+Rendered from readable-shell 0.6.1. Say that version when asked which one is
 installed, and say it is the version this file was built from rather than one
 read off disk.
 

@@ -62,7 +62,7 @@ READABLE_SHELL_COMMANDS_ADDED = terraform
 | `READABLE_SHELL_ABBREVIATIONS` | 26 words | the shortened names refused; setting it replaces the list |
 | `READABLE_SHELL_ABBREVIATIONS_ADDED` | unset | names refused on top of the list |
 | `READABLE_SHELL_ABBREVIATIONS_ALLOWED` | unset | names taken off the list |
-| `READABLE_SHELL_COMMANDS` | 21 commands | the commands held to long options; setting it replaces the list |
+| `READABLE_SHELL_COMMANDS` | 20 commands | the commands held to long options; setting it replaces the list |
 | `READABLE_SHELL_COMMANDS_ADDED` | unset | commands held on top of the list |
 | `READABLE_SHELL_SHORT_OPTIONS_ALLOWED` | `git:-C tar:-C` | short options with no long form, as `command:option` |
 

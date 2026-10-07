@@ -1,6 +1,6 @@
 {
 	"name": "readable-shell",
-	"version": "0.6.0",
+	"version": "0.6.1",
 	"description": "Refuses shortened variable names, short-form options, long pipelines outside a function and scripts that end in an if, in the shell an agent writes or runs. A legibility guard, not a correctness linter: it checks nothing shellcheck checks, so run both.",
 	"displayName": "readable-shell",
 	"license": "MIT",
@@ -66,7 +66,7 @@
 		},
 		"COMMANDS": {
 			"kind": "text",
-			"default": "aws brew curl docker gcloud gh git grep jq kubectl mise node npm npx pip3 python3 rsync sort ssh tar wget",
+			"default": "aws brew curl docker gcloud gh git grep jq kubectl mise node npm npx pip3 python3 rsync sort tar wget",
 			"says": "the commands whose short options are refused, space separated. Setting it replaces the whole list. Say that a command is listed only where every option in use has a long form"
 		},
 		"COMMANDS_ADDED": {
