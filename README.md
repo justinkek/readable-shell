@@ -3,25 +3,30 @@
 (audience: humans)
 
 Shell an agent commits should read like the rest of your code. This plugin
-refuses two things at the moment an agent writes them into a shell file:
-
-1. A shortened variable name - `encoded`, not `enc`.
-2. A short-form option on a command that has a long one - `git --message`, not
-   `git -m`.
+refuses a shortened variable name at the moment an agent writes it into a shell
+file - `encoded`, not `enc`:
 
 ```
-Unreadable shell denied in scripts/release.sh - shortened variable name(s): msg;
-short-form option(s): git -m. Spell every variable name out as the whole word,
-and write every option in its long form, then retry.
+Unreadable shell denied in scripts/release.sh - shortened variable name(s): msg.
+Spell every variable name out as the whole word, then retry.
+```
+
+A short-form option is noted rather than refused. The agent is asked to write
+the long form where the command takes one that works on both Linux and macOS -
+`git --message`, not `git -m` - and to leave the short one where it takes none:
+
+```
+Short-form options added in scripts/release.sh - git -m. Where a command takes
+a long form of an option that works on both Linux and macOS, write that instead.
 ```
 
 It is a legibility guard, not a correctness linter. It checks nothing
 shellcheck checks, and shellcheck checks nothing it does, so run both.
 
 Only what an edit adds is counted, so an old file is never refused for what was
-already in it. Both lists are kept short on purpose: a command is listed only
-where its options have long forms, so `sed -n` and `ls -la` pass, and so does
-`[ -n "$value" ]`.
+already in it. Commands that take no long forms on macOS, such as `sed` and
+`ls`, and the shell's own built-ins are left quiet, so `sed -n`, `ls -la` and
+`[ -n "$value" ]` raise no note.
 
 ## Installing
 
@@ -51,7 +56,7 @@ either.
 ```
 # .readable-shell/settings in a Go project
 READABLE_SHELL_ABBREVIATIONS_ALLOWED = ctx
-READABLE_SHELL_COMMANDS_ADDED = terraform
+READABLE_SHELL_COMMANDS_QUIET_ADDED = protoc
 ```
 
 | Setting | Default | What it does |
@@ -62,9 +67,8 @@ READABLE_SHELL_COMMANDS_ADDED = terraform
 | `READABLE_SHELL_ABBREVIATIONS` | 26 words | the shortened names refused; setting it replaces the list |
 | `READABLE_SHELL_ABBREVIATIONS_ADDED` | unset | names refused on top of the list |
 | `READABLE_SHELL_ABBREVIATIONS_ALLOWED` | unset | names taken off the list |
-| `READABLE_SHELL_COMMANDS` | 21 commands | the commands held to long options; setting it replaces the list |
-| `READABLE_SHELL_COMMANDS_ADDED` | unset | commands held on top of the list |
-| `READABLE_SHELL_SHORT_OPTIONS_ALLOWED` | `git:-C tar:-C` | short options with no long form, as `command:option` |
+| `READABLE_SHELL_COMMANDS_QUIET` | the built-ins and the classic Unix tools | the commands whose short options are never noted; setting it replaces the list |
+| `READABLE_SHELL_COMMANDS_QUIET_ADDED` | unset | commands left quiet on top of the list, such as a project's own scripts |
 
 A session is told the rules once, when it first writes a shell file: that
 write is refused with the rules in the reason, and the agent redoes it. A

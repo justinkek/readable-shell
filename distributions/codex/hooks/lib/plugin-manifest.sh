@@ -19,9 +19,8 @@ plugin_setting_default() {
     ABBREVIATIONS) printf '%s' 'acc arg attr cfg cmd ctx curr desc dir dst enc fp idx len msg num opt pos prev req res src str tmp val var' ;;
     ABBREVIATIONS_ADDED) printf '%s' '' ;;
     ABBREVIATIONS_ALLOWED) printf '%s' '' ;;
-    COMMANDS) printf '%s' 'aws brew curl docker gcloud gh git grep jq kubectl mise node npm npx pip3 python3 rsync sort ssh tar wget' ;;
-    COMMANDS_ADDED) printf '%s' '' ;;
-    SHORT_OPTIONS_ALLOWED) printf '%s' 'git:-C tar:-C' ;;
+    COMMANDS_QUIET) printf '%s' '[ [[ test set read export local declare readonly typeset unset shift return exit printf echo cd pwd trap wait eval exec source command type hash ulimit umask alias getopts let awk basename cat chmod chown comm cp cut date df diff dirname du env file find head hostname id kill ln ls mkdir mktemp mv nohup od paste ps python python3 rm rmdir scp sed sleep ssh stat tail tee tmux touch tr uname uniq wc which xargs' ;;
+    COMMANDS_QUIET_ADDED) printf '%s' '' ;;
   esac
 }
 
@@ -37,9 +36,8 @@ plugin_setting_kind() {
     ABBREVIATIONS) printf '%s' 'text' ;;
     ABBREVIATIONS_ADDED) printf '%s' 'text' ;;
     ABBREVIATIONS_ALLOWED) printf '%s' 'text' ;;
-    COMMANDS) printf '%s' 'text' ;;
-    COMMANDS_ADDED) printf '%s' 'text' ;;
-    SHORT_OPTIONS_ALLOWED) printf '%s' 'text' ;;
+    COMMANDS_QUIET) printf '%s' 'text' ;;
+    COMMANDS_QUIET_ADDED) printf '%s' 'text' ;;
   esac
 }
 

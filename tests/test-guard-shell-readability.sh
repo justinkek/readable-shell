@@ -69,6 +69,19 @@ assert_denies() {
   fi
 }
 
+# A short option is noted, never refused: the write goes ahead with a note.
+assert_notes() {
+  local label="$1" output="$2"
+  if printf '%s' "$output" | grep --quiet --fixed-strings '"additionalContext":"Short-form options added' \
+    && ! printf '%s' "$output" | grep --quiet --fixed-strings '"permissionDecision":"deny"'; then
+    printf "  PASS  %s\n" "$label"
+    pass=$((pass + 1))
+  else
+    printf "  FAIL  %s - expected a note, got '%s'\n" "$label" "$output"
+    fail=$((fail + 1))
+  fi
+}
+
 assert_silent() {
   local label="$1" output="$2"
   if [ -z "$output" ]; then
@@ -80,15 +93,15 @@ assert_silent() {
   fi
 }
 
-printf "Test group: short-form options are denied\n"
+printf "Test group: short-form options are noted, not denied\n"
 
-assert_denies "clustered option on curl" \
+assert_notes "clustered option on curl" \
   "$(run_bash 'curl -sS https://example.dev')"
-assert_denies "the jq options from the review" \
+assert_notes "the jq options from the review" \
   "$(run_bash 'jq -rn --arg c "$cursor" @uri')"
-assert_denies "single-letter option on git" \
+assert_notes "single-letter option on git" \
   "$(run_bash 'git commit -m "a message"')"
-assert_denies "short option inside a written script" \
+assert_notes "short option inside a written script" \
   "$(run_write /tmp/probe.sh '#!/usr/bin/env bash
 gh pr view -q .url')"
 
@@ -103,7 +116,7 @@ readable() { local cmd=$1; printf "%s" "$cmd"; }')"
 assert_denies "an assignment in a one-off command" \
   "$(run_bash 'tmp=/tmp/out')"
 
-printf "\nTest group: shell with no long form must never be denied\n"
+printf "\nTest group: a command left quiet is never noted\n"
 
 assert_silent "wc rejects a long option outright" \
   "$(run_bash 'wc -l /tmp/probe.sh')"
@@ -126,8 +139,10 @@ assert_silent "a builtin option is not a command option" \
   "$(run_write /tmp/probe.sh '#!/usr/bin/env bash
 set -f
 export -f readable')"
-assert_silent "git -C has no long form" \
-  "$(run_bash 'git -C /tmp/repo status')"
+assert_silent "a short option in a substitution on a quiet command" \
+  "$(run_bash 'value=$(head -n 1 /tmp/probe.sh)')"
+assert_notes "a short option in a substitution on another command" \
+  "$(run_bash 'value=$(git log -n 1)')"
 
 printf "\nTest group: readable shell stays silent\n"
 
@@ -161,7 +176,7 @@ value=1' 'jq -nc "{}"
 value=2')"
 assert_silent "an existing short name re-indented, not added" \
   "$(run_edit /tmp/probe.sh 'cmd=$1' '  cmd=$1')"
-assert_denies "a second offence added beside an existing one" \
+assert_notes "a second short option added beside an existing one" \
   "$(run_edit /tmp/probe.sh 'jq -nc "{}"' 'jq -nc "{}"
 git commit -m "a message"')"
 
@@ -188,18 +203,18 @@ assert_denies "a name added to the list" \
   "$(run_bash 'btn=1' READABLE_SHELL_ABBREVIATIONS_ADDED='btn err')"
 assert_silent "a list replaced whole" \
   "$(run_bash 'enc=1' READABLE_SHELL_ABBREVIATIONS='btn')"
-assert_denies "a command added to the list" \
-  "$(run_bash 'terraform plan -out plan.bin' READABLE_SHELL_COMMANDS_ADDED='terraform')"
-assert_silent "a command the list does not hold" \
+assert_notes "a command the quiet list does not hold" \
   "$(run_bash 'terraform plan -out plan.bin')"
-assert_silent "a short option allowed" \
-  "$(run_bash 'git commit -m "a message"' READABLE_SHELL_SHORT_OPTIONS_ALLOWED='git:-m')"
+assert_silent "a command added to the quiet list" \
+  "$(run_bash 'terraform plan -out plan.bin' READABLE_SHELL_COMMANDS_QUIET_ADDED='terraform')"
+assert_notes "a quiet list replaced whole" \
+  "$(run_bash 'sed -n 1p /tmp/probe.sh' READABLE_SHELL_COMMANDS_QUIET='ls')"
 
 printf "\nTest group: the rules and the scope can each be narrowed\n"
 
 assert_silent "options alone lets a short name through" \
   "$(run_bash 'enc=1' READABLE_SHELL_RULES=options)"
-assert_denies "and still refuses a short option" \
+assert_notes "and still notes a short option" \
   "$(run_bash 'git commit -m "a message"' READABLE_SHELL_RULES=options)"
 assert_silent "names alone lets a short option through" \
   "$(run_bash 'git commit -m "a message"' READABLE_SHELL_RULES=names)"
@@ -230,15 +245,25 @@ outside="$(jq --null-input --compact-output --arg cwd "$elsewhere" \
 assert_denies "the project the payload names wins over the directory it ran in" "$outside"
 rm -rf "$PROJECT/.readable-shell"
 
-printf "\nTest group: the refusal names the setting that would allow an option\n"
+printf "\nTest group: the note names the setting that leaves a command quiet\n"
 
-refusal="$(run_bash 'git commit -m "a message"')"
-printf '%s' "$refusal" | grep --quiet --fixed-strings 'READABLE_SHELL_SHORT_OPTIONS_ALLOWED'
+note="$(run_bash 'git commit -m "a message"')"
+printf '%s' "$note" | grep --quiet --fixed-strings 'READABLE_SHELL_COMMANDS_QUIET_ADDED'
 if [ "$?" = "0" ]; then
-  printf "  PASS  the refusal names READABLE_SHELL_SHORT_OPTIONS_ALLOWED\n"
+  printf "  PASS  the note names READABLE_SHELL_COMMANDS_QUIET_ADDED\n"
   pass=$((pass + 1))
 else
-  printf "  FAIL  the refusal names READABLE_SHELL_SHORT_OPTIONS_ALLOWED - got '%s'\n" "$refusal"
+  printf "  FAIL  the note names READABLE_SHELL_COMMANDS_QUIET_ADDED - got '%s'\n" "$note"
+  fail=$((fail + 1))
+fi
+
+refused="$(run_bash 'enc=1; git commit -m x')"
+printf '%s' "$refused" | grep --quiet --fixed-strings 'Short-form options added in this command - git -m'
+if [ "$?" = "0" ]; then
+  printf "  PASS  a refusal for a name carries the option note too\n"
+  pass=$((pass + 1))
+else
+  printf "  FAIL  a refusal for a name carries the option note too - got '%s'\n" "$refused"
   fail=$((fail + 1))
 fi
 
@@ -253,14 +278,14 @@ run_patch() {
 
 assert_denies "a shell file added with a shortened name" \
   "$(run_patch $'*** Begin Patch\n*** Add File: bin/run.sh\n+enc=1\n*** End Patch')"
-assert_denies "a shell file changed to hold a short option" \
+assert_notes "a shell file changed to hold a short option" \
   "$(run_patch $'*** Begin Patch\n*** Update File: bin/run.sh\n@@\n-git commit --message x\n+git commit -m x\n*** End Patch')"
 assert_silent "a markdown file in the same patch shape" \
   "$(run_patch $'*** Begin Patch\n*** Add File: notes.md\n+Run `curl -sS` to fetch it.\n*** End Patch')"
 assert_silent "an existing short name carried past unchanged" \
   "$(run_patch $'*** Begin Patch\n*** Update File: bin/run.sh\n@@\n-cmd=1\n+  cmd=1\n*** End Patch')"
 
-both="$(run_patch $'*** Begin Patch\n*** Add File: one.sh\n+enc=1\n*** Add File: notes.md\n+tmp=1\n*** Add File: two.bash\n+curl -sS x\n*** End Patch')"
+both="$(run_patch $'*** Begin Patch\n*** Add File: one.sh\n+enc=1\n*** Add File: notes.md\n+tmp=1\n*** Add File: two.bash\n+msg=x\n*** End Patch')"
 reason="$(printf '%s' "$both" | jq --raw-output '.hookSpecificOutput.permissionDecisionReason')"
 case "$reason" in
   *one.sh*two.bash*)
@@ -272,7 +297,7 @@ case "$reason" in
   *) printf "  FAIL  a patch touching three files names only the two shell files - got '%s'\n" "$reason"; fail=$((fail + 1)) ;;
 esac
 
-assert_denies "a Codex command is held as well" \
+assert_notes "a Codex command is held as well" \
   "$(jq --null-input --compact-output '{tool_name:"Bash",tool_input:{command:"curl -sS x"}}' \
     | HOOK="$CODEX_HOOKS/guard-shell-readability.sh" guarded)"
 
