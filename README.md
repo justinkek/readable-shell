@@ -54,9 +54,9 @@ it. The project's file is read first, and an environment variable before
 either.
 
 ```
-# .readable-shell/settings in a Go project
-READABLE_SHELL_ABBREVIATIONS_ALLOWED = ctx
-READABLE_SHELL_COMMANDS_QUIET_ADDED = protoc
+# .readable-shell/settings in an Express project
+READABLE_SHELL_ABBREVIATIONS_ALLOWED = req res
+READABLE_SHELL_COMMANDS_QUIET_ADDED = deploy
 ```
 
 | Setting | Default | What it does |

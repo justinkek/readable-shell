@@ -19,7 +19,7 @@ Blank lines and lines opening with `#` are ignored, and the last assignment of a
 | `READABLE_SHELL_SHELLS` | `bourne` | which shells' files are held to the rules, space separated. The shells known are `bourne`: sh, bash, zsh, ksh, dash, ash and mksh. `detect` holds every known shell |
 | `READABLE_SHELL_ABBREVIATIONS` | `acc arg args arr attr attrs btn buf cb cfg cmd conf ctx cur curr db decl decls def dep deps desc dest dev dir dirs dist doc docs dst e el elem elems enc env envs err ev evt expr exprs ext exts fn fp func i ident idents idx j len lib mod msg num obj opt opts param params perf pkg pos prev prod prop props proto ref refs rel repo req res ret retval sep src stmt stmts str tbl temp tit tmp util utils val var vars ver` | the shortened variable names refused, space separated. Setting it replaces the whole list |
 | `READABLE_SHELL_ABBREVIATIONS_ADDED` | unset, nothing added | shortened names refused on top of the list, such as `btn err resp` |
-| `READABLE_SHELL_ABBREVIATIONS_ALLOWED` | unset, nothing allowed | names taken off the list, such as `ctx` for a Go project or `req res` for an Express one |
+| `READABLE_SHELL_ABBREVIATIONS_ALLOWED` | unset, nothing allowed | names taken off the list, such as `req res` for an Express project |
 | `READABLE_SHELL_COMMANDS_QUIET` | `[ [[ test set read export local declare readonly typeset unset shift return exit printf echo cd pwd trap wait eval exec source command type hash ulimit umask alias getopts let awk basename cat chmod chown comm cp cut date df diff dirname du env file find head hostname id kill ln ls mkdir mktemp mv nohup od paste ps python python3 rm rmdir scp sed sleep ssh stat tail tee tmux touch tr uname uniq wc which xargs` | the commands whose short options are never noted, because they take no long form that works on both Linux and macOS, space separated. Setting it replaces the whole list |
 | `READABLE_SHELL_COMMANDS_QUIET_ADDED` | unset, nothing added | commands left quiet on top of the list, such as a project's own scripts |
 
@@ -94,7 +94,7 @@ the cloud environment, see
 
 ## Note
 
-Rendered from readable-shell 0.9.1. Say that version when asked which one is
+Rendered from readable-shell 0.9.2. Say that version when asked which one is
 installed, and say it is the version this file was built from rather than one
 read off disk.
 
