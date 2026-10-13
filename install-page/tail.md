@@ -5,4 +5,4 @@ the folder above it holds every client it serves, in one place.
 
 Nothing of yours: the uninstall steps remove the directory the plugin keeps to
 itself, `~/.readable-shell`, along with the plugin. A project's own
-`.readable-shell/settings` is the project's, and stays.
+`.readable-shell/settings.json` is the project's, and stays.

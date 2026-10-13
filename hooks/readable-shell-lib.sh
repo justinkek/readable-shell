@@ -125,23 +125,14 @@ rules_text() {
 }
 
 # The shortened names refused, one to a line.
-abbreviations() {
-  local word allowed
-  allowed=" $(setting_value ABBREVIATIONS_ALLOWED) "
-  for word in $(setting_value ABBREVIATIONS) $(setting_value ABBREVIATIONS_ADDED); do
-    case "$allowed" in
-      *" $word "*) continue ;;
-    esac
-    printf '%s\n' "$word"
-  done
-}
+abbreviations() { setting_list ABBREVIATIONS; }
 
-# Every short option on a command not left quiet, as `option: command -x`.
+# Every short option on a command not skipped, as `option: command -x`.
 # Quoted text is data rather than a command, so it is taken out first, and a
 # substitution or a group starts a command of its own.
 scan_options() {
-  local text="$1" unquoted segment head_word token quiet_commands
-  quiet_commands=" $(setting_value COMMANDS_QUIET) $(setting_value COMMANDS_QUIET_ADDED) "
+  local text="$1" unquoted segment head_word token skipped_commands
+  skipped_commands=" $(setting_value SKIPPED_COMMANDS) "
   unquoted="$(printf '%s\n' "$text" | sed -E "s/'[^']*'//g; s/\"[^\"]*\"//g")"
 
   while IFS= read -r segment; do
@@ -161,7 +152,7 @@ scan_options() {
     case "$head_word" in
       *[!A-Za-z0-9._+-]*) continue ;;
     esac
-    case "$quiet_commands" in
+    case "$skipped_commands" in
       *" $head_word "*) continue ;;
     esac
     shift

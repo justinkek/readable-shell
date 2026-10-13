@@ -16,11 +16,180 @@ plugin_setting_default() {
     RULES) printf '%s' 'names options functions constants early-exits' ;;
     SCOPE) printf '%s' 'files' ;;
     SHELLS) printf '%s' 'bourne' ;;
-    ABBREVIATIONS) printf '%s' 'acc arg args arr attr attrs btn buf cb cfg cmd conf ctx cur curr db decl decls def dep deps desc dest dev dir dirs dist doc docs dst e el elem elems enc env envs err ev evt expr exprs ext exts fn fp func i ident idents idx j len lib mod msg num obj opt opts param params perf pkg pos prev prod prop props proto ref refs rel repo req res ret retval sep src stmt stmts str tbl temp tit tmp util utils val var vars ver' ;;
-    ABBREVIATIONS_ADDED) printf '%s' '' ;;
-    ABBREVIATIONS_ALLOWED) printf '%s' '' ;;
-    COMMANDS_QUIET) printf '%s' '[ [[ test set read export local declare readonly typeset unset shift return exit printf echo cd pwd trap wait eval exec source command type hash ulimit umask alias getopts let awk basename cat chmod chown comm cp cut date df diff dirname du env file find head hostname id kill ln ls mkdir mktemp mv nohup od paste ps python python3 rm rmdir scp sed sleep ssh stat tail tee tmux touch tr uname uniq wc which xargs' ;;
-    COMMANDS_QUIET_ADDED) printf '%s' '' ;;
+    ABBREVIATIONS) printf '%s' 'acc
+arg
+args
+arr
+attr
+attrs
+btn
+buf
+cb
+cfg
+cmd
+conf
+ctx
+cur
+curr
+db
+decl
+decls
+def
+dep
+deps
+desc
+dest
+dev
+dir
+dirs
+dist
+doc
+docs
+dst
+e
+el
+elem
+elems
+enc
+env
+envs
+err
+ev
+evt
+expr
+exprs
+ext
+exts
+fn
+fp
+func
+i
+ident
+idents
+idx
+j
+len
+lib
+mod
+msg
+num
+obj
+opt
+opts
+param
+params
+perf
+pkg
+pos
+prev
+prod
+prop
+props
+proto
+ref
+refs
+rel
+repo
+req
+res
+ret
+retval
+sep
+src
+stmt
+stmts
+str
+tbl
+temp
+tit
+tmp
+util
+utils
+val
+var
+vars
+ver' ;;
+    SKIPPED_COMMANDS) printf '%s' '[
+[[
+test
+set
+read
+export
+local
+declare
+readonly
+typeset
+unset
+shift
+return
+exit
+printf
+echo
+cd
+pwd
+trap
+wait
+eval
+exec
+source
+command
+type
+hash
+ulimit
+umask
+alias
+getopts
+let
+awk
+basename
+cat
+chmod
+chown
+comm
+cp
+cut
+date
+df
+diff
+dirname
+du
+env
+file
+find
+head
+hostname
+id
+kill
+ln
+ls
+mkdir
+mktemp
+mv
+nohup
+od
+paste
+ps
+python
+python3
+rm
+rmdir
+scp
+sed
+sleep
+ssh
+stat
+tail
+tee
+tmux
+touch
+tr
+uname
+uniq
+wc
+which
+xargs' ;;
+    ABBREVIATIONS_SHIPPED) printf '%s' 'on' ;;
+    SKIPPED_COMMANDS_SHIPPED) printf '%s' 'on' ;;
   esac
 }
 
@@ -33,11 +202,10 @@ plugin_setting_kind() {
     RULES) printf '%s' 'text' ;;
     SCOPE) printf '%s' 'choice' ;;
     SHELLS) printf '%s' 'text' ;;
-    ABBREVIATIONS) printf '%s' 'text' ;;
-    ABBREVIATIONS_ADDED) printf '%s' 'text' ;;
-    ABBREVIATIONS_ALLOWED) printf '%s' 'text' ;;
-    COMMANDS_QUIET) printf '%s' 'text' ;;
-    COMMANDS_QUIET_ADDED) printf '%s' 'text' ;;
+    ABBREVIATIONS) printf '%s' 'list' ;;
+    SKIPPED_COMMANDS) printf '%s' 'list' ;;
+    ABBREVIATIONS_SHIPPED) printf '%s' 'switch' ;;
+    SKIPPED_COMMANDS_SHIPPED) printf '%s' 'switch' ;;
   esac
 }
 
