@@ -48,15 +48,22 @@ of them a pattern can decide, and the rest are shown to the agent:
 
 ## Settings
 
-Every setting can be set for yourself in `~/.readable-shell/settings`, or for
-everyone in a project in `.readable-shell/settings` at its root, committed with
-it. The project's file is read first, and an environment variable before
-either.
+Every setting can be set for yourself in `~/.readable-shell/settings.json`,
+for everyone in a project in `.readable-shell/settings.json` at its root,
+committed with it, or for yourself in one project in
+`.readable-shell/settings.local.json` beside it. The local file is read first,
+then the project's, then your own, and an environment variable before any of
+them. A file names a setting without the `READABLE_SHELL_` prefix.
 
-```
-# .readable-shell/settings in an Express project
-READABLE_SHELL_ABBREVIATIONS_ALLOWED = req res
-READABLE_SHELL_COMMANDS_QUIET_ADDED = deploy
+The two lists are set a word at a time: `false` takes a shipped word off,
+`true` adds one, and every other shipped word stays. In an Express project,
+`.readable-shell/settings.json` might hold:
+
+```json
+{
+  "ABBREVIATIONS": { "req": false, "res": false },
+  "SKIPPED_COMMANDS": { "deploy": true }
+}
 ```
 
 | Setting | Default | What it does |
@@ -64,11 +71,15 @@ READABLE_SHELL_COMMANDS_QUIET_ADDED = deploy
 | `READABLE_SHELL_RULES` | all five | which rules hold, from `names options functions constants early-exits`; a rule left out is neither checked nor shown |
 | `READABLE_SHELL_SCOPE` | `files` | `files` for shell written into files, `commands` for commands an agent runs, `both` for the two |
 | `READABLE_SHELL_SHELLS` | `bourne` | which shells' files are held; `detect` holds every known shell |
-| `READABLE_SHELL_ABBREVIATIONS` | 93 words | the shortened names refused; setting it replaces the list |
-| `READABLE_SHELL_ABBREVIATIONS_ADDED` | unset | names refused on top of the list |
-| `READABLE_SHELL_ABBREVIATIONS_ALLOWED` | unset | names taken off the list |
-| `READABLE_SHELL_COMMANDS_QUIET` | the built-ins and the classic Unix tools | the commands whose short options are never noted; setting it replaces the list |
-| `READABLE_SHELL_COMMANDS_QUIET_ADDED` | unset | commands left quiet on top of the list, such as a project's own scripts |
+| `READABLE_SHELL_ABBREVIATIONS` | 93 words | the shortened names refused, set a word at a time |
+| `READABLE_SHELL_ABBREVIATIONS_SHIPPED` | `on` | `off` leaves out the 93 words, so only the ones added are refused |
+| `READABLE_SHELL_SKIPPED_COMMANDS` | the built-ins and the classic Unix tools | the commands whose short options are never noted, set a command at a time |
+| `READABLE_SHELL_SKIPPED_COMMANDS_SHIPPED` | `on` | `off` leaves out the shipped commands, so only the ones added are skipped |
+
+In an environment variable a list is the same JSON object:
+`READABLE_SHELL_ABBREVIATIONS='{"req": false}'`. Settings written before
+0.10.0 as `KEY = value` lines are converted once for your own file; a
+project's old file is not read, and the settings skill writes it again.
 
 A session is told the rules once, when it first writes a shell file: that
 write is refused with the rules in the reason, and the agent redoes it. A

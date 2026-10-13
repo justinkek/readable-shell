@@ -206,19 +206,19 @@ enc=1')"
 printf "\nTest group: the lists are the project's to change\n"
 
 assert_silent "a name taken off the list" \
-  "$(run_bash 'ctx=1' READABLE_SHELL_ABBREVIATIONS_ALLOWED='ctx')"
+  "$(run_bash 'ctx=1' READABLE_SHELL_ABBREVIATIONS='{"ctx": false}')"
 assert_denies "and the rest of the list still holds" \
-  "$(run_bash 'enc=1' READABLE_SHELL_ABBREVIATIONS_ALLOWED='ctx')"
+  "$(run_bash 'enc=1' READABLE_SHELL_ABBREVIATIONS='{"ctx": false}')"
 assert_denies "a name added to the list" \
-  "$(run_bash 'btn=1' READABLE_SHELL_ABBREVIATIONS_ADDED='btn err')"
-assert_silent "a list replaced whole" \
-  "$(run_bash 'enc=1' READABLE_SHELL_ABBREVIATIONS='btn')"
-assert_notes "a command the quiet list does not hold" \
+  "$(run_bash 'zork=1' READABLE_SHELL_ABBREVIATIONS='{"zork": true}')"
+assert_silent "the shipped names left out" \
+  "$(run_bash 'enc=1' READABLE_SHELL_ABBREVIATIONS_SHIPPED=off READABLE_SHELL_ABBREVIATIONS='{"zork": true}')"
+assert_notes "a command the skipped list does not hold" \
   "$(run_bash 'terraform plan -out plan.bin')"
-assert_silent "a command added to the quiet list" \
-  "$(run_bash 'terraform plan -out plan.bin' READABLE_SHELL_COMMANDS_QUIET_ADDED='terraform')"
-assert_notes "a quiet list replaced whole" \
-  "$(run_bash 'sed -n 1p /tmp/probe.sh' READABLE_SHELL_COMMANDS_QUIET='ls')"
+assert_silent "a command added to the skipped list" \
+  "$(run_bash 'terraform plan -out plan.bin' READABLE_SHELL_SKIPPED_COMMANDS='{"terraform": true}')"
+assert_notes "a shipped command turned off" \
+  "$(run_bash 'sed -n 1p /tmp/probe.sh' READABLE_SHELL_SKIPPED_COMMANDS='{"sed": false}')"
 
 printf "\nTest group: the rules and the scope can each be narrowed\n"
 
@@ -244,7 +244,7 @@ assert_denies "and one naming bourne holds a Bourne file" \
 printf "\nTest group: a project's own settings are read from where it runs\n"
 
 mkdir -p "$PROJECT/.readable-shell"
-printf 'READABLE_SHELL_ABBREVIATIONS_ALLOWED = req res\n' > "$PROJECT/.readable-shell/settings"
+printf '{"ABBREVIATIONS": {"req": false, "res": false}}\n' > "$PROJECT/.readable-shell/settings.json"
 assert_silent "a name the project allows" "$(run_bash 'req=1')"
 assert_denies "and one it does not" "$(run_bash 'enc=1')"
 
@@ -255,15 +255,15 @@ outside="$(jq --null-input --compact-output --arg cwd "$elsewhere" \
 assert_denies "the project the payload names wins over the directory it ran in" "$outside"
 rm -rf "$PROJECT/.readable-shell"
 
-printf "\nTest group: the note names the setting that leaves a command quiet\n"
+printf "\nTest group: the note names the setting that skips a command\n"
 
 note="$(run_bash 'git commit -m "a message"')"
-printf '%s' "$note" | grep --quiet --fixed-strings 'READABLE_SHELL_COMMANDS_QUIET_ADDED'
+printf '%s' "$note" | grep --quiet --fixed-strings 'READABLE_SHELL_SKIPPED_COMMANDS'
 if [ "$?" = "0" ]; then
-  printf "  PASS  the note names READABLE_SHELL_COMMANDS_QUIET_ADDED\n"
+  printf "  PASS  the note names READABLE_SHELL_SKIPPED_COMMANDS\n"
   pass=$((pass + 1))
 else
-  printf "  FAIL  the note names READABLE_SHELL_COMMANDS_QUIET_ADDED - got '%s'\n" "$note"
+  printf "  FAIL  the note names READABLE_SHELL_SKIPPED_COMMANDS - got '%s'\n" "$note"
   fail=$((fail + 1))
 fi
 

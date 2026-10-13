@@ -22,7 +22,7 @@ checkout at `../ai-plugin-sdk`, or wherever `AI_PLUGIN_SDK` names.
 
 Every variable name is a whole word, refused at edit time with no escape hatch. Every option is written in its long form where the command takes one that works on both Linux and macOS, noted once the write goes through, by `hooks/note-short-options.sh` on `after_tool`, and never refused. It is a legibility guard. It checks nothing shellcheck checks, and nothing it refuses is a bug.
 
-Which commands take portable long forms is not kept as a list: there are too many, and they differ between Linux and macOS. The agent judges each one from the note. The one list kept is of commands that take none, `COMMANDS_QUIET`, and a command missing from it costs a needless note rather than a wrong refusal.
+Which commands take portable long forms is not kept as a list: there are too many, and they differ between Linux and macOS. The agent judges each one from the note. The one list kept is of commands that take none, `SKIPPED_COMMANDS`, and a command missing from it costs a needless note rather than a wrong refusal.
 
 ## Layout rules
 
