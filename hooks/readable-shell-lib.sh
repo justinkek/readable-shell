@@ -186,7 +186,11 @@ scan_names() {
 # an if of more than one line with no else, as `early exit: <function>`.
 # Quoted text, comments and here-documents are data, so they are taken out
 # first.
-layout_program="$(cat <<'AWK'
+#
+# Read with `read` rather than a command substitution: bash 3.2 scans the text
+# of a `$( )` for backquotes even inside a quoted here-document, and the
+# program holds one.
+IFS= read -r -d '' layout_program <<'AWK' || true
 function trim(text) { sub(/^[ \t]+/, "", text); sub(/[ \t]+$/, "", text); return text }
 
 # The line with quoted text and comments taken out. A command substitution
@@ -376,7 +380,6 @@ END {
   end_frame()
 }
 AWK
-)"
 
 scan_layout() {
   [ -n "$1" ] || return 0
